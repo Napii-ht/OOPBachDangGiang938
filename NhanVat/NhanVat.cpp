@@ -15,6 +15,11 @@ NhanVat::NhanVat(float x, float y, float tocDoBanDau, int mauToiDa, int satThuon
     hinhDang.setPosition(viTri);
 }
 
+NhanVat::NhanVat(sf::Vector2f viTriBanDau, float tocDoBanDau, int mauToiDa, int satThuongBanDau)
+    : NhanVat(viTriBanDau.x, viTriBanDau.y, tocDoBanDau, mauToiDa, satThuongBanDau)   // goi lai ham khoi tao ben tren
+{
+}
+
 void NhanVat::DiChuyen(const sf::Vector2f& huong, float dt)
 {
     if (daHySinh) return;

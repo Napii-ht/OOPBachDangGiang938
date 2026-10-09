@@ -17,6 +17,7 @@ protected:                       // protected: lop con truy cap duoc
 
 public:
     NhanVat(float x, float y, float tocDoBanDau, int mauToiDa, int satThuongBanDau);
+    NhanVat(sf::Vector2f viTriBanDau, float tocDoBanDau, int mauToiDa, int satThuongBanDau);  // cach goi khac, KeDich dung
     virtual ~NhanVat() = default;   // BAT BUOC virtual khi co ke thua
 
     // ----- Cac ham chinh -----

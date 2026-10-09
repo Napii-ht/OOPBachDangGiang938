@@ -18,7 +18,10 @@ NguoiChoi::NguoiChoi(float x, float y)
       vuaTanCong(false),
       daTuongTac(false),
       phimETruoc(false),
-      phimCachTruoc(false)
+      phimCachTruoc(false),
+      gioiHanBanDo(sf::Vector2f(0.f, 0.f), sf::Vector2f(1280.f, 720.f)),
+      danhSachVatCan(nullptr),
+      khiNhatVatPham()
 {
     hinhDang.setFillColor(sf::Color(60, 120, 255));   // xanh duong
 }
@@ -70,19 +73,65 @@ void NguoiChoi::Chay(float dt)
     }
 }
 
+// ---------------- Va cham ----------------
+
+sf::FloatRect NguoiChoi::TaoHitBoxTai(const sf::Vector2f& tam) const
+{
+    sf::Vector2f kichThuoc = hinhDang.getSize();
+    return sf::FloatRect(tam - kichThuoc / 2.f, kichThuoc);   // (goc tren-trai, kich thuoc)
+}
+
+bool NguoiChoi::BiChanTai(const sf::Vector2f& tam) const
+{
+    sf::FloatRect hb = TaoHitBoxTai(tam);
+
+    // 1) Ra ngoai ban do?
+    if (hb.position.x < gioiHanBanDo.position.x ||
+        hb.position.y < gioiHanBanDo.position.y ||
+        hb.position.x + hb.size.x > gioiHanBanDo.position.x + gioiHanBanDo.size.x ||
+        hb.position.y + hb.size.y > gioiHanBanDo.position.y + gioiHanBanDo.size.y)
+        return true;
+
+    // 2) Dung vao vat can nao do?
+    if (danhSachVatCan) {
+        for (const sf::FloatRect& vc : *danhSachVatCan) {
+            if (hb.findIntersection(vc)) return true;
+        }
+    }
+    return false;
+}
+
+bool NguoiChoi::KiemTraVaCham(const sf::FloatRect& khac) const
+{
+    return GetHitBox().findIntersection(khac).has_value();
+}
+
 void NguoiChoi::DiChuyen(const sf::Vector2f& huong, float dt)
 {
     if (IsDaHySinh()) return;
 
     float doDai = std::sqrt(huong.x * huong.x + huong.y * huong.y);
-    if (doDai > 0.f) {
-        sf::Vector2f h = huong / doDai;
-        huongNhin = h;                                   // nho huong cuoi de danh
-        float v = dangChay ? tocDoChay : tocDo;          // chay thi nhanh hon
-        viTri += h * v * dt;
-        hinhDang.setPosition(viTri);
-    }
+    if (doDai <= 0.f) return;
+
+    sf::Vector2f h = huong / doDai;
+    huongNhin = h;                                   // nho huong cuoi de danh
+    float v = dangChay ? tocDoChay : tocDo;          // chay thi nhanh hon
+    sf::Vector2f buoc = h * v * dt;
+
+    // Neu dang ket san trong vat can (vd bi spawn de len tuong) thi cho di tu do de thoat ra
+    bool dangKet = BiChanTai(viTri);
+
+    // Thu di theo truc X truoc, roi truc Y -> cham tuong van "truot" doc theo tuong duoc
+    sf::Vector2f thuX(viTri.x + buoc.x, viTri.y);
+    if (dangKet || !BiChanTai(thuX)) viTri = thuX;
+
+    sf::Vector2f thuY(viTri.x, viTri.y + buoc.y);
+    if (dangKet || !BiChanTai(thuY)) viTri = thuY;
+
+    hinhDang.setPosition(viTri);
 }
+
+// ---------------- Hanh dong ----------------
 
 void NguoiChoi::TanCong()
 {
@@ -98,6 +147,18 @@ void NguoiChoi::TuongTac()
 {
     if (IsDaHySinh()) return;
     daTuongTac = true;           // NPC, coc, thuyen... se kiem tra co bien nay
+}
+
+void NguoiChoi::Chet()
+{
+    HySinh();                    // dung lai ham cua lop cha cho khoi viet 2 lan
+}
+
+bool NguoiChoi::NhatVatPham(int maVatPham, const std::string& ten)
+{
+    if (IsDaHySinh()) return false;
+    if (khiNhatVatPham) khiNhatVatPham(maVatPham, ten);   // bao cho ben TuDo (Yen) biet
+    return true;
 }
 
 void NguoiChoi::CapNhat(float dt)
@@ -119,11 +180,11 @@ void NguoiChoi::Ve(sf::RenderWindow& cuaSo)
 {
     NhanVat::Ve(cuaSo);          // ve than nhan vat nhu lop cha
 
-    if (dangTanCong) {           // ve vong tron tam thoi de thay pham vi danh
-        sf::CircleShape vong(phamViTanCong);
-        vong.setOrigin({phamViTanCong, phamViTanCong});
-        vong.setPosition(viTri);
-        vong.setFillColor(sf::Color(255, 255, 0, 80));
-        cuaSo.draw(vong);
+    if (dangTanCong) {           // ve vung danh (dung bang vung dung de tinh trung don) de de nhin
+        sf::FloatRect vung = GetVungTanCong();
+        sf::RectangleShape o(vung.size);
+        o.setPosition(vung.position);
+        o.setFillColor(sf::Color(255, 255, 0, 80));
+        cuaSo.draw(o);
     }
 }
