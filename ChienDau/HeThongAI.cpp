@@ -10,33 +10,45 @@ float HeThongAI::TinhKhoangCach(sf::Vector2f p1, sf::Vector2f p2) {
 sf::Vector2f HeThongAI::TinhHuong(sf::Vector2f nguon, sf::Vector2f dich) {
     float dx = dich.x - nguon.x;
     float dy = dich.y - nguon.y;
-    float kc = std::sqrt(dx * dx + dy * dy);
-    // Tránh lỗi chia cho 0 nếu 2 nhân vật đứng trùng tọa độ nhau
-    if (kc > 0.0001f) {
-        return sf::Vector2f(dx / kc, dy / kc);
+    float dist = std::sqrt(dx * dx + dy * dy);
+    if (dist > 0.0001f) {
+        return sf::Vector2f(dx / dist, dy / dist);
     }
     return sf::Vector2f(0.f, 0.f);
 }
 
 void HeThongAI::CapNhatAI(KeDich& keDich, sf::Vector2f viTriPlayer, float deltaTime) {
-    // Chết rồi thì dừng nghỉ ngơi, không cần tính toán hành vi nữa
-    if (keDich.IsDaHySinh()) {
-        keDich.SetTrangThai(TrangThaiKeDich::DA_CHET);
-        return;
-    }
+    if (keDich.IsDaHySinh()) return;
 
-    float khoangCach = TinhKhoangCach(keDich.GetViTri(), viTriPlayer);
-
-    // TH1: Áp sát trong tầm chém -> Chuyển sang trạng thái chém
-    if (khoangCach <= keDich.GetTamDanh()) {
-        keDich.SetTrangThai(TrangThaiKeDich::TAN_CONG);
-    }
-    // TH2: Ở trong tầm mắt nhìn thấy -> Lao tới đuổi theo
-    else if (khoangCach <= keDich.GetTamPhatHien()) {
+    if (keDich.PhatHienNguoiChoi(viTriPlayer)) {
         keDich.DuoiTheo(viTriPlayer, deltaTime);
-    }
-    // TH3: Ở xa quá không thấy -> Đứng yên cảnh giác
-    else {
+    } else {
         keDich.SetTrangThai(TrangThaiKeDich::DUNG_YEN);
     }
+}
+
+void HeThongAI::XuLyGianCachLinh(std::vector<std::unique_ptr<KeDich>>& danhSachDich, float khoangCachToiThieu) {
+    for (size_t i = 0; i < danhSachDich.size(); ++i) {
+        if (danhSachDich[i]->IsDaHySinh()) continue;
+
+        for (size_t j = i + 1; j < danhSachDich.size(); ++j) {
+            if (danhSachDich[j]->IsDaHySinh()) continue;
+
+            sf::Vector2f p1 = danhSachDich[i]->GetViTri();
+            sf::Vector2f p2 = danhSachDich[j]->GetViTri();
+            float dist = TinhKhoangCach(p1, p2);
+
+            if (dist < khoangCachToiThieu && dist > 0.001f) {
+                sf::Vector2f dayHuong = TinhHuong(p1, p2);
+                float dayXa = (khoangCachToiThieu - dist) * 0.5f;
+
+                danhSachDich[i]->SetViTri(p1 - dayHuong * dayXa);
+                danhSachDich[j]->SetViTri(p2 + dayHuong * dayXa);
+            }
+        }
+    }
+}
+
+void HeThongAI::CapNhatAIThuyen(ThuyenKeDich& thuyen, sf::Vector2f viTriThuyenPlayer, float deltaTime) {
+    thuyen.DuoiTheo(viTriThuyenPlayer, deltaTime);
 }
