@@ -1,47 +1,57 @@
 #pragma once
 
 #include "../NhanVat/KeDich.h"
+#include "../BanDo/Thuyen.h"
 #include "HeThongAI.h"
 #include <vector>
 #include <unordered_set>
 #include <memory>
 #include <SFML/Graphics.hpp>
 
-// Quản lý chiến trường và trận đánh cuối trên sông Bạch Đằng
+class BanDo; // Forward declaration
+
 class HeThongChienDau {
 private:
-    std::vector<std::unique_ptr<KeDich>> danhSachKeDich; // Danh sách toàn bộ quân giặc
-    HeThongAI heThongAI;                                 // Bộ não AI để điều khiển lính
-    int soKeDichConLai;                                  // Số giặc còn sống
+    std::vector<std::unique_ptr<KeDich>> danhSachKeDich;          // Bộ binh Nam Hán
+    std::vector<std::unique_ptr<ThuyenKeDich>> danhSachThuyenDich; // Hạm đội chiến thuyền Nam Hán
+    HeThongAI heThongAI;
+    int soKeDichConLai;
     bool daKhoiTaoTranChien;
 
-    // Danh sách lưu các con lính đã bị chém trúng trong nhát kiếm hiện tại
-    // Tránh bug kinh điển: 1 nhát chém tồn tại 0.25s (15 frame) làm giặc bị trừ máu 15 lần
+    // Chống bug dính sát thương nhiều lần trong 1 nhát kiếm
     std::unordered_set<const KeDich*> danhSachDaBiChemTrongNhatNay;
 
 public:
     HeThongChienDau();
     ~HeThongChienDau() = default;
 
-    // Thả 1 con lính ra tọa độ chỉ định
-    void ThemKeDich(sf::Vector2f viTri, float tocDo = 100.f, int mau = 80, int dame = 10);
+    // Sinh bộ binh và Tướng Lưu Hoằng Thao trong trận phản công cuối
+    void ThemKeDich(sf::Vector2f viTri, float tocDo = 100.f, int mau = 80, int dame = 10,
+                    LoaiKeDich loai = LoaiKeDich::LINH_THUONG);
+    void TaoTranChienCuoi(int soLuongDich = 6);
 
-    // Kích hoạt trận đánh cuối: sinh ra 1 bầy lính Nam Hán dàn trận
-    void TaoTranChienCuoi(int soLuongDich = 5);
+    // Màn hải chiến nhử địch (Chương 4 & 5)
+    void TaoDoanThuyenNamHan(int soLuong = 4);
+    void CapNhatHaiChien(float deltaTime, sf::Vector2f viTriThuyenPlayer, BanDo& banDo);
+    void VeHaiChien(sf::RenderWindow& window);
+    int GetSoThuyenConSong() const;
+    bool KiemTraTatCaThuyenDaBiPhaHuy() const;
 
-    // Vòng lặp game gọi hàm này mỗi frame để cập nhật toàn bộ quân địch
+    // Cập nhật và vẽ bộ chiến
     void CapNhat(float deltaTime, NhanVat& player);
     void Ve(sf::RenderWindow& window);
 
-    // Xử lý khi player vung kiếm chém
-    // Chỉ trừ đúng 1 lần dame cho mỗi con lính trong 1 nhát chém
+    // Chém kiếm
     int XuLyPlayerTanCong(const sf::FloatRect& vungTanCong, int satThuong, bool playerDangChem);
 
-    // Thắng khi hết sạch giặc (soKeDichConLai == 0)
+    // Kiểm tra kết quả
     int GetSoKeDichConLai() const { return soKeDichConLai; }
     bool KiemTraChienThang() const;
-
-    // Reset làm trận mới
     void XoaToanBo();
+
     const std::vector<std::unique_ptr<KeDich>>& GetDanhSachKeDich() const { return danhSachKeDich; }
+    std::vector<std::unique_ptr<ThuyenKeDich>>& GetDanhSachThuyenDich() { return danhSachThuyenDich; }
+
+    // Vẽ thanh máu Boss Lưu Hoằng Thao phong cách Terraria ở giữa đỉnh màn hình
+    void VeBossBar(sf::RenderWindow& window, const sf::Font& font);
 };
