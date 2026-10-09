@@ -1,20 +1,26 @@
 #pragma once
 
 #include "../NhanVat/KeDich.h"
+#include "../BanDo/Thuyen.h"
 #include <SFML/System/Vector2.hpp>
+#include <vector>
+#include <memory>
 
-// Bộ não tính toán xem lính nên làm gì (đứng yên, đuổi theo hay chém)
 class HeThongAI {
 public:
     HeThongAI() = default;
     ~HeThongAI() = default;
 
-    // Tính toán hành động cho từng con lính dựa vào tọa độ của player
+    // Điều khiển hành vi của lính bộ binh Nam Hán
     void CapNhatAI(KeDich& keDich, sf::Vector2f viTriPlayer, float deltaTime);
 
-    // Hàm tính khoảng cách Pytago giữa 2 điểm
-    static float TinhKhoangCach(sf::Vector2f p1, sf::Vector2f p2);
+    // Tránh việc nhiều lính dẫm đạp dính chặt vào 1 điểm (Flocking / Separation)
+    void XuLyGianCachLinh(std::vector<std::unique_ptr<KeDich>>& danhSachDich, float khoangCachToiThieu = 28.f);
 
-    // Hàm tính hướng đi từ A đến B (vector đơn vị có độ dài = 1)
+    // Điều khiển chiến thuyền giặc đuổi theo tàu nhẹ Đại Việt
+    void CapNhatAIThuyen(ThuyenKeDich& thuyen, sf::Vector2f viTriThuyenPlayer, float deltaTime);
+
+    // Hàm toán học vector
+    static float TinhKhoangCach(sf::Vector2f p1, sf::Vector2f p2);
     static sf::Vector2f TinhHuong(sf::Vector2f nguon, sf::Vector2f dich);
 };
