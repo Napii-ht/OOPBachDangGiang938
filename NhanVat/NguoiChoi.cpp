@@ -156,8 +156,17 @@ void NguoiChoi::Chet()
 
 bool NguoiChoi::NhatVatPham(int maVatPham, const std::string& ten)
 {
-    if (IsDaHySinh()) return false;
-    if (khiNhatVatPham) khiNhatVatPham(maVatPham, ten);   // bao cho ben TuDo (Yen) biet
+    if (IsDaHySinh())
+        return false;
+
+    VatPham vatPham(maVatPham, ten);
+
+    if (!tuDo.ThemVatPham(vatPham))
+        return false;
+
+    if (khiNhatVatPham)
+        khiNhatVatPham(maVatPham, ten);
+
     return true;
 }
 
@@ -187,4 +196,21 @@ void NguoiChoi::Ve(sf::RenderWindow& cuaSo)
         o.setFillColor(sf::Color(255, 255, 0, 80));
         cuaSo.draw(o);
     }
+}
+
+bool NguoiChoi::NhatCoc(int maVatPham)
+{
+    VatPham coc(maVatPham, "Coc Bach Dang");
+
+    return tuDo.ThemVatPham(coc);
+}
+
+int NguoiChoi::GetSoLuongCoc() const
+{
+    return tuDo.SoLuongVatPham();
+}
+
+bool NguoiChoi::DaThuThapDu3Coc() const
+{
+    return GetSoLuongCoc() >= 3;
 }

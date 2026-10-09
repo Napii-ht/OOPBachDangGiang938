@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <SFML/Graphics.hpp>
@@ -17,6 +16,7 @@ private:
         int columns;
         int tileWidth;
         int tileHeight;
+
         sf::Texture texture;
     };
 
@@ -48,23 +48,33 @@ private:
     {
         std::string layer;
         std::string name;
+        std::vector<sf::Vector2f> points;
 
         float x;
         float y;
         float width;
         float height;
+
+        int maVatPham = 0;
+        bool daThuThap = false;
     };
 
     struct ObjectSprite
     {
         std::unique_ptr<sf::Texture> texture;
         std::unique_ptr<sf::Sprite> sprite;
+
+        std::string layer;
+        int objectIndex = -1;
     };
 
     std::vector<TilesetInfo> tilesets;
     std::vector<TileInfo> tiles;
     std::vector<ObjectInfo> objects;
     std::vector<ObjectSprite> objectSprites;
+    std::vector<sf::Vector2f> cacDinhSong;
+
+    bool coGioiHanSong = false;
 
     int mapWidth;
     int mapHeight;
@@ -83,4 +93,23 @@ public:
 
     int layChieuRong() const;
     int layChieuCao() const;
+
+    bool layGioiHanSong(sf::FloatRect& ketQua) const;
+    bool namTrongSong(sf::Vector2f viTri) const;
+
+    void DatTrangThaiCoc(bool hienCoc);
+    bool VaChamCoc(sf::FloatRect hitBoxThuyen) const;
+
+    bool GanCocNhatDuoc(
+        sf::Vector2f viTriNguoiChoi,
+        float khoangCach = 60.f
+    ) const;
+
+    bool NhatCocGanNhat(
+        sf::Vector2f viTriNguoiChoi,
+        int& maVatPham,
+        std::string& tenVatPham
+    );
+
+    void DanhDauCocDaThuThap(int maVatPham);
 };

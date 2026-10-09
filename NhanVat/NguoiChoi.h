@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include "NhanVat.h"
+#include "../DoiTuong/TuDo.h"
+#include "../DoiTuong/VatPham.h"
 
 // NguoiChoi ke thua NhanVat: co them the luc, chay, tan cong, tuong tac, va cham, nhat do.
 class NguoiChoi : public NhanVat {
@@ -29,6 +31,8 @@ private:
     bool phimETruoc;           // de phat hien "vua bam" (chong giu phim)
     bool phimCachTruoc;
 
+    TuDo tuDo;
+
     // ----- Giai doan 3: va cham + nhat do -----
     sf::FloatRect gioiHanBanDo;                          // khong cho di ra ngoai khung nay
     const std::vector<sf::FloatRect>* danhSachVatCan;    // cac vat can (tuong, nuoc sau...) do BanDo cua Yen cung cap
@@ -39,6 +43,10 @@ private:
 
 public:
     NguoiChoi(float x, float y);
+
+    bool NhatCoc(int maVatPham);
+    int GetSoLuongCoc() const;
+    bool DaThuThapDu3Coc() const;
 
     void XuLyPhim();                                              // doc ban phim
     void DiChuyen(const sf::Vector2f& huong, float dt) override;  // ghi de: co chay + va cham

@@ -1,12 +1,12 @@
-
 #include "BanDo.h"
 
+#include <exception>
 #include <fstream>
 #include <iostream>
+#include <map>
+#include <regex>
 #include <sstream>
 #include <string>
-#include <regex>
-#include <map>
 #include <utility>
 
 BanDo::BanDo()
@@ -47,7 +47,7 @@ void BanDo::loadMap(const std::string& path)
 
     std::string line;
 
-    // 1. Doc kich thuoc map
+    // Doc kich thuoc map.
     while (std::getline(file, line))
     {
         if (line.find("<map ") == std::string::npos)
@@ -83,7 +83,7 @@ void BanDo::loadMap(const std::string& path)
         break;
     }
 
-    // 2. Doc tileset va animation
+    // Doc tileset va animation.
     std::map<int, TileAnimation> animations;
 
     file.clear();
@@ -114,29 +114,32 @@ void BanDo::loadMap(const std::string& path)
             return "";
         };
 
-        std::string value;
+        std::string value = getAttribute(line, "firstgid");
 
-        value = getAttribute(line, "firstgid");
         if (!value.empty())
             info.firstGid = std::stoi(value);
 
         value = getAttribute(line, "tilecount");
+
         if (!value.empty())
             info.tileCount = std::stoi(value);
 
         value = getAttribute(line, "columns");
+
         if (!value.empty())
             info.columns = std::stoi(value);
 
         value = getAttribute(line, "tilewidth");
+
         if (!value.empty())
             info.tileWidth = std::stoi(value);
 
         value = getAttribute(line, "tileheight");
+
         if (!value.empty())
             info.tileHeight = std::stoi(value);
 
-        // Tim anh tileset
+        // Tai anh tileset.
         std::string imageLine;
 
         while (std::getline(file, imageLine))
@@ -148,8 +151,7 @@ void BanDo::loadMap(const std::string& path)
             }
         }
 
-        std::string imagePath =
-            getAttribute(imageLine, "source");
+        std::string imagePath = getAttribute(imageLine, "source");
 
         if (imagePath.empty())
         {
@@ -166,7 +168,7 @@ void BanDo::loadMap(const std::string& path)
             continue;
         }
 
-        // Doc animation
+        // Doc cac frame animation.
         int currentTileId = -1;
         TileAnimation currentAnimation;
         bool readingAnimation = false;
@@ -228,7 +230,7 @@ void BanDo::loadMap(const std::string& path)
         tilesets.push_back(std::move(info));
     }
 
-    // 3. Doc cac tile tren layer
+    // Doc cac tile tren layer.
     file.clear();
     file.seekg(0);
 
@@ -244,18 +246,17 @@ void BanDo::loadMap(const std::string& path)
         if (std::regex_search(line, match, nameRegex))
             layerName = match[1].str();
 
-        // Khong render layer Collision
         if (layerName == "Collision")
             continue;
 
-        // Tim du lieu tile
+        // Tim du lieu tile.
         while (std::getline(file, line))
         {
             if (line.find("<data") != std::string::npos)
                 break;
         }
 
-        // Doc tung hang tile
+        // Doc tung hang tile.
         for (int y = 0; y < mapHeight; ++y)
         {
             if (!std::getline(file, line))
@@ -275,7 +276,7 @@ void BanDo::loadMap(const std::string& path)
                 const unsigned long long rawGid =
                     std::stoull(value);
 
-                // Loai bo cac bit flip cua Tiled
+                // Loai bo cac bit flip cua Tiled.
                 const unsigned int gid =
                     static_cast<unsigned int>(
                         rawGid & 0x1FFFFFFF
@@ -350,24 +351,29 @@ void BanDo::loadMap(const std::string& path)
         }
     }
 
-    // 4. Doc cac Object Layer
+    // Doc cac Object Layer.
     file.clear();
     file.seekg(0);
 
     std::string objectLayerName;
 
+    auto getAttribute = [](const std::string& source,
+                           const std::string& attribute) -> std::string
+    {
+        std::regex pattern(attribute + "=\"([^\"]*)\"");
+        std::smatch match;
+
+        if (std::regex_search(source, match, pattern))
+            return match[1].str();
+
+        return "";
+    };
+
     while (std::getline(file, line))
     {
         if (line.find("<objectgroup ") != std::string::npos)
         {
-            std::smatch match;
-            std::regex nameRegex(R"regex(name="([^"]*)")regex");
-
-            objectLayerName.clear();
-
-            if (std::regex_search(line, match, nameRegex))
-                objectLayerName = match[1].str();
-
+            objectLayerName = getAttribute(line, "name");
             continue;
         }
 
@@ -383,43 +389,133 @@ void BanDo::loadMap(const std::string& path)
             continue;
         }
 
-        auto getAttribute = [&](const std::string& attribute) -> std::string
-        {
-            std::regex pattern(attribute + "=\"([^\"]*)\"");
-            std::smatch match;
-
-            if (std::regex_search(line, match, pattern))
-                return match[1].str();
-
-            return "";
-        };
+        const std::string objectLine = line;
 
         ObjectInfo obj{};
-
         obj.layer = objectLayerName;
-        obj.name = getAttribute("name");
+        obj.name = getAttribute(objectLine, "name");
 
-        std::string x = getAttribute("x");
-        std::string y = getAttribute("y");
-        std::string width = getAttribute("width");
-        std::string height = getAttribute("height");
+        std::string x = getAttribute(objectLine, "x");
+        std::string y = getAttribute(objectLine, "y");
+        std::string width = getAttribute(objectLine, "width");
+        std::string height = getAttribute(objectLine, "height");
 
         obj.x = x.empty() ? 0.f : std::stof(x);
         obj.y = y.empty() ? 0.f : std::stof(y);
         obj.width = width.empty() ? 0.f : std::stof(width);
         obj.height = height.empty() ? 0.f : std::stof(height);
 
+        // Doc noi dung object.
+        std::string objectContent;
+
+        if (objectLine.find("/>") == std::string::npos)
+        {
+            std::string childLine;
+
+            while (std::getline(file, childLine))
+            {
+                objectContent += childLine + "\n";
+
+                if (childLine.find("</object>") != std::string::npos)
+                    break;
+            }
+        }
+
+        // Doc properties cua coc co the nhat.
+        if (obj.layer == "CollectibleStakes")
+        {
+            std::regex maRegex(
+                R"regex(<property[^>]*name="maVatPham"[^>]*value="([^"]*)")regex");
+
+            std::regex tenRegex(
+                R"regex(<property[^>]*name="ten"[^>]*value="([^"]*)")regex");
+
+            std::smatch propertyMatch;
+
+            if (std::regex_search(
+                    objectContent, propertyMatch, maRegex))
+            {
+                obj.maVatPham = std::stoi(propertyMatch[1].str());
+            }
+
+            if (std::regex_search(
+                    objectContent, propertyMatch, tenRegex))
+            {
+                obj.name = propertyMatch[1].str();
+            }
+        }
+
+        // Doc polygon neu object co polygon.
+        if (objectContent.find("<polygon ") != std::string::npos)
+        {
+            std::regex polygonRegex(
+                R"regex(<polygon[^>]*points="([^"]*)")regex");
+
+            std::smatch pointsMatch;
+
+            if (std::regex_search(
+                    objectContent, pointsMatch, polygonRegex))
+            {
+                std::stringstream pointsStream(pointsMatch[1].str());
+                std::string pointText;
+
+                while (pointsStream >> pointText)
+                {
+                    const std::size_t comma = pointText.find(',');
+
+                    if (comma == std::string::npos)
+                        continue;
+
+                    try
+                    {
+                        const float localX = std::stof(
+                            pointText.substr(0, comma));
+
+                        const float localY = std::stof(
+                            pointText.substr(comma + 1));
+
+                        obj.points.push_back({
+                            obj.x + localX,
+                            obj.y + localY
+                        });
+                    }
+                    catch (const std::exception&)
+                    {
+                        std::cerr << "Khong doc duoc diem Polygon: "
+                                  << pointText << '\n';
+                    }
+                }
+            }
+        }
+
+        if (obj.layer == "RiverBounds" && obj.points.size() >= 3)
+        {
+            cacDinhSong = obj.points;
+            coGioiHanSong = true;
+        }
+        else if (obj.layer == "RiverBounds")
+        {
+            std::cerr << "Canh bao: RiverBounds khong co Polygon hop le. "
+                      << "So dinh doc duoc: "
+                      << obj.points.size() << '\n';
+        }
+
         objects.push_back(std::move(obj));
     }
 
-    // 5. Tao sprite cho cac object
-    for (const auto& obj : objects)
+    // Tao sprite cho cac object.
+    for (std::size_t i = 0; i < objects.size(); ++i)
     {
+        const auto& obj = objects[i];
         std::string imagePath;
 
         if (obj.layer == "Stakes")
         {
             imagePath = "Assets/Objects/Stakes.png";
+        }
+        else if (obj.layer == "CollectibleStakes")
+        {
+            imagePath = "Assets/Map/Terrain.png";
         }
         else if (obj.layer == "Boats")
         {
@@ -441,28 +537,50 @@ void BanDo::loadMap(const std::string& path)
 
         auto sprite = std::make_unique<sf::Sprite>(*texture);
 
-        // Vi tri object trong Tiled tinh theo pixel
-        sprite->setPosition({obj.x, obj.y});
-
-        // Dieu chinh kich thuoc sprite theo object
-        if (obj.width > 0.f && obj.height > 0.f)
+        if (obj.layer == "Stakes")
         {
-            const auto textureSize = texture->getSize();
+            sprite->setTextureRect(
+                sf::IntRect({0, 0}, {32, 64})
+            );
 
-            sprite->setScale({
-                obj.width / static_cast<float>(textureSize.x),
-                obj.height / static_cast<float>(textureSize.y)
-            });
+            sprite->setOrigin({16.f, 64.f});
+            sprite->setPosition({obj.x, obj.y});
+        }
+        else if (obj.layer == "CollectibleStakes")
+        {
+            sprite->setTextureRect(
+                sf::IntRect({418, 174}, {30, 12})
+            );
+
+            sprite->setOrigin({15.f, 6.f});
+            sprite->setPosition({obj.x, obj.y});
+            sprite->setScale({1.5f, 1.5f});
+        }
+        else
+        {
+            sprite->setPosition({obj.x, obj.y});
+
+            if (obj.width > 0.f && obj.height > 0.f)
+            {
+                const auto textureSize = texture->getSize();
+
+                sprite->setScale({
+                    obj.width / static_cast<float>(textureSize.x),
+                    obj.height / static_cast<float>(textureSize.y)
+                });
+            }
         }
 
         objectSprites.push_back({
             std::move(texture),
-            std::move(sprite)
+            std::move(sprite),
+            obj.layer,
+            static_cast<int>(i)
         });
     }
 }
 
-// Cap nhat animation
+// Cap nhat animation.
 void BanDo::capNhat(float deltaTime)
 {
     const float deltaMilliseconds = deltaTime * 1000.f;
@@ -483,7 +601,6 @@ void BanDo::capNhat(float deltaTime)
                 break;
 
             tile.elapsedTime -= currentFrame.duration;
-
             tile.currentFrame++;
 
             if (tile.currentFrame >=
@@ -517,24 +634,185 @@ void BanDo::capNhat(float deltaTime)
     }
 }
 
-// Ve map
+// Ve map.
 void BanDo::Ve(sf::RenderWindow& window)
 {
     for (const auto& tile : tiles)
         window.draw(tile.sprite);
 
     for (const auto& obj : objectSprites)
+    {
+        if (!obj.sprite)
+            continue;
+
+        if (obj.layer == "CollectibleStakes" &&
+            obj.objectIndex >= 0 &&
+            objects[obj.objectIndex].daThuThap)
+        {
+            continue;
+        }
+
         window.draw(*obj.sprite);
+    }
 }
 
-// Lay chieu rong map theo pixel
+// Lay chieu rong map theo pixel.
 int BanDo::layChieuRong() const
 {
     return mapWidth * tileWidth;
 }
 
-// Lay chieu cao map theo pixel
+// Lay chieu cao map theo pixel.
 int BanDo::layChieuCao() const
 {
     return mapHeight * tileHeight;
+}
+
+bool BanDo::namTrongSong(sf::Vector2f viTri) const
+{
+    if (!coGioiHanSong || cacDinhSong.size() < 3)
+        return false;
+
+    bool benTrong = false;
+
+    for (std::size_t i = 0, j = cacDinhSong.size() - 1;
+         i < cacDinhSong.size();
+         j = i++)
+    {
+        const auto& a = cacDinhSong[i];
+        const auto& b = cacDinhSong[j];
+
+        if ((a.y > viTri.y) != (b.y > viTri.y))
+        {
+            const float giaoX =
+                (b.x - a.x) * (viTri.y - a.y) /
+                (b.y - a.y) + a.x;
+
+            if (viTri.x < giaoX)
+                benTrong = !benTrong;
+        }
+    }
+
+    return benTrong;
+}
+
+void BanDo::DatTrangThaiCoc(bool hienCoc)
+{
+    for (auto& obj : objectSprites)
+    {
+        if (obj.layer != "Stakes" || !obj.sprite)
+            continue;
+
+        obj.sprite->setColor(
+            hienCoc
+                ? sf::Color::White
+                : sf::Color::Transparent
+        );
+    }
+}
+
+bool BanDo::VaChamCoc(sf::FloatRect hitBoxThuyen) const
+{
+    for (const auto& obj : objectSprites)
+    {
+        if (obj.layer != "Stakes" || !obj.sprite)
+            continue;
+
+        // Bo qua coc dang chim.
+        if (obj.sprite->getColor().a == 0)
+            continue;
+
+        if (obj.sprite->getGlobalBounds().findIntersection(hitBoxThuyen))
+            return true;
+    }
+
+    return false;
+}
+
+bool BanDo::GanCocNhatDuoc(
+    sf::Vector2f viTriNguoiChoi,
+    float khoangCach
+) const
+{
+    for (const auto& obj : objects)
+    {
+        if (obj.layer != "CollectibleStakes" ||
+            obj.daThuThap ||
+            obj.maVatPham <= 0)
+        {
+            continue;
+        }
+
+        sf::Vector2f tamCoc(
+            obj.x + obj.width / 2.f,
+            obj.y + obj.height / 2.f
+        );
+
+        sf::Vector2f delta = tamCoc - viTriNguoiChoi;
+
+        const float khoangCachBinhPhuong =
+            delta.x * delta.x + delta.y * delta.y;
+
+        if (khoangCachBinhPhuong <= khoangCach * khoangCach)
+            return true;
+    }
+
+    return false;
+}
+
+bool BanDo::NhatCocGanNhat(
+    sf::Vector2f viTriNguoiChoi,
+    int& maVatPham,
+    std::string& tenVatPham
+)
+{
+    ObjectInfo* cocGanNhat = nullptr;
+    float khoangCachNhoNhat = 60.f * 60.f;
+
+    for (auto& obj : objects)
+    {
+        if (obj.layer != "CollectibleStakes" ||
+            obj.daThuThap ||
+            obj.maVatPham <= 0)
+        {
+            continue;
+        }
+
+        sf::Vector2f tamCoc(
+            obj.x + obj.width / 2.f,
+            obj.y + obj.height / 2.f
+        );
+
+        sf::Vector2f delta = tamCoc - viTriNguoiChoi;
+
+        const float d2 = delta.x * delta.x + delta.y * delta.y;
+
+        if (d2 <= khoangCachNhoNhat)
+        {
+            khoangCachNhoNhat = d2;
+            cocGanNhat = &obj;
+        }
+    }
+
+    if (cocGanNhat == nullptr)
+        return false;
+
+    maVatPham = cocGanNhat->maVatPham;
+    tenVatPham = cocGanNhat->name;
+
+    return true;
+}
+
+void BanDo::DanhDauCocDaThuThap(int maVatPham)
+{
+    for (auto& obj : objects)
+    {
+        if (obj.layer == "CollectibleStakes" &&
+            obj.maVatPham == maVatPham &&
+            !obj.daThuThap)
+        {
+            obj.daThuThap = true;
+            return;
+        }
+    }
 }

@@ -1,0 +1,8 @@
+# Build files
+build/
+
+# macOS
+.DS_Store
+
+# VS Code local settings
+.vscode/
