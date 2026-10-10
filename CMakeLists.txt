@@ -19,6 +19,10 @@ add_executable(OOPBachDangGiang938
     
     NhanVat/NhanVat.cpp
     NhanVat/NguoiChoi.cpp
+
+    NhanVat/KeDich.cpp
+    ChienDau/HeThongAI.cpp
+    ChienDau/HeThongChienDau.cpp
 )
 
 target_link_libraries(OOPBachDangGiang938
