@@ -34,6 +34,7 @@ public:
 
     // ----- Getter / Setter khac -----
     void  SetViTri(float x, float y);
+    void  SetViTri(const sf::Vector2f& v) { SetViTri(v.x, v.y); }
     float GetTocDo() const        { return tocDo; }
     int   GetSucKhoe() const      { return sucKhoe; }
     int   GetSucKhoeToiDa() const { return sucKhoeToiDa; }

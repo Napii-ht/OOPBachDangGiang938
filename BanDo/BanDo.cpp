@@ -539,10 +539,12 @@ void BanDo::loadMap(const std::string& path)
 
         if (obj.layer == "Stakes")
         {
+            // Cot thu 4: trang thai thuy trieu cao
             sprite->setTextureRect(
-                sf::IntRect({0, 0}, {32, 64})
+                sf::IntRect({96, 0}, {32, 64})
             );
 
+            // Giu chan coc tai vi tri object tren ban do
             sprite->setOrigin({16.f, 64.f});
             sprite->setPosition({obj.x, obj.y});
         }
@@ -696,6 +698,56 @@ bool BanDo::namTrongSong(sf::Vector2f viTri) const
     return benTrong;
 }
 
+void BanDo::CapNhatThuyTrieu(float tiLeRutNuoc)
+{
+    tiLeRutNuoc = std::clamp(tiLeRutNuoc, 0.f, 1.f);
+    tiLeRutNuocHienTai = tiLeRutNuoc;
+
+    int cotTile;
+
+    if (tiLeRutNuoc < 0.25f)
+        cotTile = 3; // Nuoc cao
+    else if (tiLeRutNuoc < 0.50f)
+        cotTile = 0; // Nuoc dang rut
+    else if (tiLeRutNuoc < 0.75f)
+        cotTile = 1; // Nuoc hoi thap
+    else
+        cotTile = 2; // Nuoc thap nhat
+
+    for (auto& obj : objectSprites)
+    {
+        if (obj.layer != "Stakes" || !obj.sprite)
+            continue;
+
+        obj.sprite->setTextureRect(
+            sf::IntRect({cotTile * 32, 0}, {32, 64})
+        );
+
+        obj.sprite->setOrigin({16.f, 64.f});
+    }
+}
+
+bool BanDo::VaChamCoc(sf::FloatRect hitBoxThuyen) const
+{
+    // Chi nguy hiem khi nuoc hoi thap tro xuong
+    if (tiLeRutNuocHienTai < 0.50f)
+        return false;
+
+    for (const auto& obj : objectSprites)
+    {
+        if (obj.layer != "Stakes" || !obj.sprite)
+            continue;
+
+        if (obj.sprite->getGlobalBounds()
+                .findIntersection(hitBoxThuyen))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void BanDo::DatTrangThaiCoc(bool hienCoc)
 {
     for (auto& obj : objectSprites)
@@ -709,24 +761,6 @@ void BanDo::DatTrangThaiCoc(bool hienCoc)
                 : sf::Color::Transparent
         );
     }
-}
-
-bool BanDo::VaChamCoc(sf::FloatRect hitBoxThuyen) const
-{
-    for (const auto& obj : objectSprites)
-    {
-        if (obj.layer != "Stakes" || !obj.sprite)
-            continue;
-
-        // Bo qua coc dang chim.
-        if (obj.sprite->getColor().a == 0)
-            continue;
-
-        if (obj.sprite->getGlobalBounds().findIntersection(hitBoxThuyen))
-            return true;
-    }
-
-    return false;
 }
 
 bool BanDo::GanCocNhatDuoc(

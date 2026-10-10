@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
-#include <NhanVat.h>
+#include "NhanVat.h"
 using namespace std;
 using namespace sf;
 class LoiThoai

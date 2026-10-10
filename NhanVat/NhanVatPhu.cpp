@@ -33,26 +33,20 @@ void NhanVatPhu::NoiChuyen()
 void NhanVatPhu::HienThiLoiThoai(RenderWindow& cuaso, Font& font)
 {
 	if (!Dangtuongtac || loithoai.Hetloithoai()) return;
-	RectangleShape khung(Vector2f(880.0f, 130.0f));
+	RectangleShape khung(Vector2f{ 880.0f, 130.0f });
 	khung.setFillColor(Color(15, 20, 30, 230));
 	khung.setOutlineColor(Color(212, 175, 55));
 	khung.setOutlineThickness(2.0f);
-	khung.setPosition(200.0f, 560.0f);
+	khung.setPosition({ 200.0f, 560.0f });
 
-	Text txtTen;
-	txtTen.setFont(font);
-	txtTen.setString(String::fromUtf8(ten.begin(), ten.end()));
-	txtTen.setCharacterSize(22);
+	Text txtTen(font, String::fromUtf8(ten.begin(), ten.end()), 22);
 	txtTen.setFillColor(Color::Yellow);
-	txtTen.setPosition(220.0f, 570.0f);
+	txtTen.setPosition({ 220.0f, 570.0f });
 
-	Text txtNoidung;
-	txtNoidung.setFont(font);
 	string cau = loithoai.Getcauhientai();
-	txtNoidung.setString(String::fromUtf8(cau.begin(), cau.end()));	
-	txtNoidung.setCharacterSize(17);
+	Text txtNoidung(font, String::fromUtf8(cau.begin(), cau.end()), 17);
 	txtNoidung.setFillColor(Color::Black);
-	txtNoidung.setPosition(220.0f, 610.0f);
+	txtNoidung.setPosition({ 220.0f, 610.0f });
 
 	cuaso.draw(khung);
 	cuaso.draw(txtTen);

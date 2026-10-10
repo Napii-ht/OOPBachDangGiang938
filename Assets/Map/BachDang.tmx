@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="160" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="21" nextobjectid="82">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="160" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="21" nextobjectid="83">
  <tileset firstgid="1" name="Grass" tilewidth="32" tileheight="32" tilecount="16" columns="8">
   <image source="Grass.png" width="256" height="64"/>
   <tile id="0">
@@ -377,32 +377,101 @@
     <property name="ten" value="Coc Bach Dang"/>
    </properties>
   </object>
-  <object id="64" x="546.986" y="1005.83" width="34.3487" height="12.9618">
+  <object id="64" x="546.214" y="1017.41" width="34.3487" height="12.9618">
    <properties>
     <property name="maVatPham" type="int" value="2"/>
     <property name="ten" value="Coc Bach Dang"/>
    </properties>
   </object>
-  <object id="65" x="320.155" y="683.733" width="34.3487" height="10.3694">
+  <object id="65" x="181.17" y="672.923" width="34.3487" height="10.3694">
    <properties>
     <property name="maVatPham" type="int" value="1"/>
     <property name="ten" value="Coc Bach Dang"/>
    </properties>
   </object>
-  <object id="67" x="906.675" y="963.059" width="44.07" height="15.5541"/>
-  <object id="68" x="1070.64" y="876.215" width="41.4776" height="14.2579"/>
-  <object id="69" x="918.989" y="1110.82" width="37.5891" height="12.3137"/>
-  <object id="70" x="686.973" y="1251.46" width="36.2929" height="12.9618"/>
-  <object id="71" x="1189.89" y="1127.67" width="38.2372" height="12.3137"/>
-  <object id="72" x="1310.43" y="1011.67" width="47.9585" height="11.6656"/>
-  <object id="73" x="1424.5" y="831.497" width="36.941" height="11.0175"/>
-  <object id="74" x="1719.38" y="845.107" width="44.07" height="14.906"/>
-  <object id="75" x="1874.27" y="1027.87" width="38.2372" height="14.2579"/>
-  <object id="76" x="2064.81" y="923.526" width="33.7006" height="17.4984"/>
-  <object id="77" x="2206.09" y="848.347" width="52.4951" height="13.6099"/>
-  <object id="78" x="2226.83" y="1210.63" width="53.1432" height="14.2579"/>
-  <object id="79" x="2646.79" y="761.504" width="52.4951" height="20.0907"/>
-  <object id="80" x="2791.32" y="668.827" width="51.199" height="15.5541"/>
-  <object id="81" x="2917.04" y="1016.85" width="36.2929" height="14.2579"/>
+  <object id="67" x="906.675" y="963.059" width="44.07" height="15.5541">
+   <properties>
+    <property name="maVatPham" type="int" value="4"/>
+    <property name="ten" value="Coc Bach Dang"/>
+   </properties>
+  </object>
+  <object id="68" x="1070.64" y="876.215" width="41.4776" height="14.2579">
+   <properties>
+    <property name="maVatPham" type="int" value="6"/>
+    <property name="ten" value="Coc Bach Dang"/>
+   </properties>
+  </object>
+  <object id="69" x="912.812" y="1123.95" width="37.5891" height="12.3137">
+   <properties>
+    <property name="maVatPham" type="int" value="5"/>
+    <property name="ten" value="Coc Bach Dang"/>
+   </properties>
+  </object>
+  <object id="71" x="1189.89" y="1145.43" width="38.2372" height="12.3137">
+   <properties>
+    <property name="maVatPham" type="int" value="7"/>
+    <property name="ten" value="Coc Bach Dang"/>
+   </properties>
+  </object>
+  <object id="72" x="1310.43" y="1011.67" width="47.9585" height="11.6656">
+   <properties>
+    <property name="maVatPham" type="int" value="8"/>
+    <property name="ten" value="Coc Bach Dang"/>
+   </properties>
+  </object>
+  <object id="73" x="1424.5" y="831.497" width="36.941" height="11.0175">
+   <properties>
+    <property name="maVatPham" type="int" value="9"/>
+    <property name="ten" value="Coc Bach Dang"/>
+   </properties>
+  </object>
+  <object id="74" x="1719.38" y="845.107" width="44.07" height="14.906">
+   <properties>
+    <property name="maVatPham" type="int" value="10"/>
+    <property name="ten" value="Coc Bach Dang"/>
+   </properties>
+  </object>
+  <object id="75" x="1874.27" y="1027.87" width="38.2372" height="14.2579">
+   <properties>
+    <property name="maVatPham" type="int" value="11"/>
+    <property name="ten" value="Coc Bach Dang"/>
+   </properties>
+  </object>
+  <object id="76" x="2063.27" y="936.652" width="33.7006" height="17.4984">
+   <properties>
+    <property name="maVatPham" type="int" value="12"/>
+    <property name="ten" value="Coc Bach Dang"/>
+   </properties>
+  </object>
+  <object id="77" x="2205.32" y="867.651" width="52.4951" height="13.6099">
+   <properties>
+    <property name="maVatPham" type="int" value="14"/>
+    <property name="ten" value="Coc Bach Dang"/>
+   </properties>
+  </object>
+  <object id="78" x="2226.83" y="1210.63" width="53.1432" height="14.2579">
+   <properties>
+    <property name="maVatPham" type="int" value="13"/>
+    <property name="ten" value="Coc Bach Dang"/>
+   </properties>
+  </object>
+  <object id="79" x="2646.79" y="761.504" width="52.4951" height="20.0907">
+   <properties>
+    <property name="maVatPham" type="int" value="15"/>
+    <property name="ten" value="Coc Bach Dang"/>
+   </properties>
+  </object>
+  <object id="80" x="2791.32" y="668.827" width="51.199" height="15.5541">
+   <properties>
+    <property name="maVatPham" type="int" value="16"/>
+    <property name="ten" value="Coc Bach Dang"/>
+   </properties>
+  </object>
+  <object id="81" x="2890.79" y="1016.08" width="36.2929" height="14.2579">
+   <properties>
+    <property name="maVatPham" type="int" value="17"/>
+    <property name="ten" value="Coc Bach Dang"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

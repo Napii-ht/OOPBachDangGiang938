@@ -81,6 +81,8 @@ private:
     int tileWidth;
     int tileHeight;
 
+    float tiLeRutNuocHienTai = 0.f;
+
     void loadMap(const std::string& path);
 
     const TilesetInfo* TimTileset(int gid) const;
@@ -93,13 +95,13 @@ public:
 
     int layChieuRong() const;
     int layChieuCao() const;
-
-    bool layGioiHanSong(sf::FloatRect& ketQua) const;
+    
     bool namTrongSong(sf::Vector2f viTri) const;
 
-    void DatTrangThaiCoc(bool hienCoc);
+    void CapNhatThuyTrieu(float tiLeRutNuoc);
     bool VaChamCoc(sf::FloatRect hitBoxThuyen) const;
 
+    void DatTrangThaiCoc(bool hienCoc);
     bool GanCocNhatDuoc(
         sf::Vector2f viTriNguoiChoi,
         float khoangCach = 60.f

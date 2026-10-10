@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-#include <SFML/Window/Keyboard.hpp>
 
 #include <algorithm>
 #include <iostream>
@@ -7,9 +6,10 @@
 #include <string>
 
 #include "BanDo/BanDo.h"
-#include "Thuyen/Thuyen.h"
 #include "DoiTuong/TuDo.h"
 #include "DoiTuong/VatPham.h"
+#include "DoiTuong/ThuyTrieu.h"
+#include "NhanVat/NguoiChoi.h"
 
 int main()
 {
@@ -19,17 +19,9 @@ int main()
     );
 
     BanDo banDo;
-    TuDo tuDo;
-
-    Thuyen thuyenNguoiChoi(
-        {400.f, 300.f},
-        180.f,
-        200,
-        sf::Color::Green
-    );
-
-    // Hiển thị cọc để người chơi có thể thu thập.
-    banDo.DatTrangThaiCoc(true);
+    NguoiChoi nguoiChoi(400.f, 300.f);
+    ThuyTrieu thuyTrieu;
+    thuyTrieu.BatDauRutNuoc();
 
     sf::Font font;
     const bool fontDaTai =
@@ -75,7 +67,6 @@ int main()
     }
 
     sf::Clock clock;
-    bool phimETruoc = false;
 
     while (window.isOpen())
     {
@@ -90,87 +81,41 @@ int main()
 
         const float deltaTime = clock.restart().asSeconds();
 
-        // Điều khiển thuyền 8 hướng.
-        sf::Vector2f huong{0.f, 0.f};
+        thuyTrieu.CapNhat(deltaTime);
+        banDo.CapNhatThuyTrieu(
+            thuyTrieu.GetTiLeRutNuoc()
+        );
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) ||
-            sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
-        {
-            huong.y -= 1.f;
-        }
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) ||
-            sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
-        {
-            huong.y += 1.f;
-        }
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) ||
-            sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
-        {
-            huong.x -= 1.f;
-        }
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) ||
-            sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
-        {
-            huong.x += 1.f;
-        }
-
-        // Di chuyển và giữ thuyền trong phạm vi dòng sông.
-        const sf::Vector2f viTriCu =
-            thuyenNguoiChoi.GetViTri();
-
-        thuyenNguoiChoi.DiChuyen(huong, deltaTime);
-
-        if (!banDo.namTrongSong(thuyenNguoiChoi.GetViTri()))
-        {
-            thuyenNguoiChoi.SetViTri(viTriCu);
-        }
-
-        thuyenNguoiChoi.CapNhat(deltaTime);
+        // Cap nhat ban do
         banDo.capNhat(deltaTime);
 
-        // Nhặt cọc bằng phím E.
-        const bool phimEDangNhan =
-            sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E);
-
-        if (phimEDangNhan && !phimETruoc)
+        // Nhat coc bang ham tuong tac cua NguoiChoi
+        if (nguoiChoi.IsDaBamTuongTac())
         {
-            if (banDo.GanCocNhatDuoc(thuyenNguoiChoi.GetViTri()))
+            int maVatPham = 0;
+            std::string tenVatPham;
+
+            if (banDo.GanCocNhatDuoc(nguoiChoi.GetViTri()) &&
+                banDo.NhatCocGanNhat(
+                    nguoiChoi.GetViTri(),
+                    maVatPham,
+                    tenVatPham))
             {
-                int maVatPham = 0;
-                std::string tenVatPham;
-
-                if (banDo.NhatCocGanNhat(
-                        thuyenNguoiChoi.GetViTri(),
-                        maVatPham,
-                        tenVatPham))
+                if (nguoiChoi.NhatVatPham(maVatPham, tenVatPham))
                 {
-                    const VatPham vatPham(maVatPham, tenVatPham);
+                    banDo.DanhDauCocDaThuThap(maVatPham);
 
-                    if (tuDo.ThemVatPham(vatPham))
-                    {
-                        banDo.DanhDauCocDaThuThap(maVatPham);
+                    noiDungThongBao =
+                        nguoiChoi.DaThuThapDu3Coc()
+                            ? "Da thu thap du 3 coc!"
+                            : "Da nhat coc!";
 
-                        noiDungThongBao =
-                            tuDo.SoLuongVatPham() >=
-                                    tuDo.GetSucChuaToiDa()
-                                ? "Da thu thap du 3 coc!"
-                                : "Da nhat coc!";
-
-                        thoiGianThongBao = 2.5f;
-                    }
-                    else
-                    {
-                        noiDungThongBao = "Tui do da day!";
-                        thoiGianThongBao = 2.5f;
-                    }
+                    thoiGianThongBao = 2.5f;
                 }
                 else
                 {
-                    noiDungThongBao = "Khong the nhat coc nay!";
-                    thoiGianThongBao = 2.f;
+                    noiDungThongBao = "Tui do da day!";
+                    thoiGianThongBao = 2.5f;
                 }
             }
             else
@@ -179,8 +124,6 @@ int main()
                 thoiGianThongBao = 2.f;
             }
         }
-
-        phimETruoc = phimEDangNhan;
 
         // Cập nhật thời gian hiển thị thông báo.
         if (thoiGianThongBao > 0.f)
@@ -195,8 +138,8 @@ int main()
         }
 
         // Cập nhật thanh tiến độ thu thập.
-        const int soCocDaNhat = tuDo.SoLuongVatPham();
-        const int sucChuaToiDa = tuDo.GetSucChuaToiDa();
+        const int soCocDaNhat = nguoiChoi.GetSoLuongCoc();
+        const int sucChuaToiDa = 3;
 
         float tiLeTienDo = 0.f;
 
@@ -214,9 +157,11 @@ int main()
             16.f
         });
 
-        // Vẽ bản đồ và thuyền.
+        // Ve ban do
         banDo.Ve(window);
-        thuyenNguoiChoi.Ve(window);
+        nguoiChoi.Ve(window);
+
+        window.setView(window.getDefaultView());
 
         // Vẽ HUD.
         if (fontDaTai)

@@ -53,4 +53,5 @@ public:
 
     void CapNhat(float deltaTime);
     void Ve(sf::RenderWindow& window);
+    void XuLyDieuKhien(float deltaTime);
 };
