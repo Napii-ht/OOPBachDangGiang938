@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-#include <SFML/Window/Keyboard.hpp>
 
 #include <algorithm>
 #include <iostream>
@@ -7,7 +6,6 @@
 #include <string>
 
 #include "BanDo/BanDo.h"
-#include "Thuyen/Thuyen.h"
 #include "DoiTuong/TuDo.h"
 #include "DoiTuong/VatPham.h"
 #include "DoiTuong/ThuyTrieu.h"
@@ -24,41 +22,6 @@ int main()
     NguoiChoi nguoiChoi(400.f, 300.f);
     ThuyTrieu thuyTrieu;
     thuyTrieu.BatDauRutNuoc();
-
-    Thuyen thuyenDich(
-        {600.f, 300.f},
-        0.f,
-        100,
-        sf::Color::Red
-    );
-
-    nguoiChoi.DatGioiHanBanDo(
-    sf::FloatRect(
-            {0.f, 0.f},
-            {
-                static_cast<float>(banDo.layChieuRong()),
-                static_cast<float>(banDo.layChieuCao())
-            }
-        )
-    );
-
-    // Camera theo nguoi choi
-    sf::View camera(
-        sf::FloatRect(
-            {0.f, 0.f},
-            {
-                static_cast<float>(window.getSize().x),
-                static_cast<float>(window.getSize().y)
-            }
-        )
-    );
-
-    camera.setCenter(nguoiChoi.GetViTri());
-
-    // Hiển thị cọc để người chơi có thể thu thập.
-    banDo.CapNhatThuyTrieu(
-        thuyTrieu.GetTiLeRutNuoc()
-    );
 
     sf::Font font;
     const bool fontDaTai =
@@ -104,11 +67,6 @@ int main()
     }
 
     sf::Clock clock;
-    bool phimETruoc = false;
-
-    float thoiGianChoSatThuong = 0.f;
-    constexpr float KHOANG_CHO_SAT_THUONG = 1.f;
-    constexpr int SAT_THUONG_COC = 20;
 
     while (window.isOpen())
     {
@@ -130,75 +88,6 @@ int main()
 
         // Cap nhat ban do
         banDo.capNhat(deltaTime);
-
-        // Cap nhat thuyen dich
-        thuyenDich.CapNhat(deltaTime);
-
-        // Giam thoi gian cho sat thuong
-        if (thoiGianChoSatThuong > 0.f)
-        {
-            thoiGianChoSatThuong -= deltaTime;
-        }
-
-        // Thuyen dich va cham coc khi nuoc rut
-        if (!thuyenDich.DaBiPhaHuy() &&
-            thoiGianChoSatThuong <= 0.f &&
-            banDo.VaChamCoc(thuyenDich.GetHitBox()))
-        {
-            thuyenDich.NhanSatThuong(SAT_THUONG_COC);
-            thoiGianChoSatThuong = KHOANG_CHO_SAT_THUONG;
-        }
-
-        // Dieu khien nhan vat
-        nguoiChoi.XuLyPhim();
-        nguoiChoi.CapNhat(deltaTime);
-
-        // Camera di theo nguoi choi
-        sf::Vector2f viTri = nguoiChoi.GetViTri();
-
-        const sf::Vector2u kichThuocCuaSo = window.getSize();
-
-        const float nuaRongCamera =
-            static_cast<float>(kichThuocCuaSo.x) / 2.f;
-
-        const float nuaCaoCamera =
-            static_cast<float>(kichThuocCuaSo.y) / 2.f;
-
-        const float rongMap = static_cast<float>(banDo.layChieuRong());
-        const float caoMap = static_cast<float>(banDo.layChieuCao());
-
-        // Neu map rong hon camera, gioi han tam camera trong map
-        float cameraX = viTri.x;
-        float cameraY = viTri.y;
-
-        if (rongMap >= kichThuocCuaSo.x)
-        {
-            cameraX = std::clamp(
-                cameraX,
-                nuaRongCamera,
-                rongMap - nuaRongCamera
-            );
-        }
-        else
-        {
-            cameraX = rongMap / 2.f;
-        }
-
-        if (caoMap >= kichThuocCuaSo.y)
-        {
-            cameraY = std::clamp(
-                cameraY,
-                nuaCaoCamera,
-                caoMap - nuaCaoCamera
-            );
-        }
-        else
-        {
-            cameraY = caoMap / 2.f;
-        }
-
-        camera.setCenter({cameraX, cameraY});
-        window.setView(camera);
 
         // Nhat coc bang ham tuong tac cua NguoiChoi
         if (nguoiChoi.IsDaBamTuongTac())
@@ -268,12 +157,10 @@ int main()
             16.f
         });
 
-        // Ve ban do va cac thuyen
+        // Ve ban do
         banDo.Ve(window);
-        thuyenDich.Ve(window);
         nguoiChoi.Ve(window);
 
-        // Chuyen ve camera mac dinh de HUD dung yen tren man hinh
         window.setView(window.getDefaultView());
 
         // Vẽ HUD.
