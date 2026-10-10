@@ -23,6 +23,7 @@ add_executable(OOPBachDangGiang938
     NhanVat/KeDich.cpp
     ChienDau/HeThongAI.cpp
     ChienDau/HeThongChienDau.cpp
+    ChienDau/ThuyenKeDich.cpp
 )
 
 target_link_libraries(OOPBachDangGiang938

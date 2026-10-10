@@ -1,7 +1,10 @@
 #include "HeThongChienDau.h"
-#include "../CotLoi/TienIch.h"
 #include "../BanDo/BanDo.h"
 #include <algorithm>
+
+static sf::String VanBan(const std::string& utf8) {
+    return sf::String::fromUtf8(utf8.begin(), utf8.end());
+}
 
 HeThongChienDau::HeThongChienDau()
     : soKeDichConLai(0),
@@ -52,7 +55,9 @@ void HeThongChienDau::CapNhatHaiChien(float deltaTime, sf::Vector2f viTriThuyenP
             }
 
             // Kiểm tra đâm va vào cọc ngầm Bạch Đằng
-            banDo.XuLyVaChamThuyenVoiBaiCoc(*thuyen);
+            if (banDo.VaChamCoc(thuyen->GetHitBox())) {
+                thuyen->SetMacCoc(true);
+            }
 
             thuyen->CapNhat(deltaTime);
         }

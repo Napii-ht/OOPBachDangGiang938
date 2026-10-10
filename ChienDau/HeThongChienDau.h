@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../NhanVat/KeDich.h"
-#include "../Thuyen/Thuyen.h"
+#include "ThuyenKeDich.h"
 #include "HeThongAI.h"
 #include <vector>
 #include <unordered_set>

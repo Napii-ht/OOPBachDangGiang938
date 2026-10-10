@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../NhanVat/KeDich.h"
-#include "../Thuyen/Thuyen.h"
+#include "ThuyenKeDich.h"
 #include <SFML/System/Vector2.hpp>
 #include <vector>
 #include <memory>
