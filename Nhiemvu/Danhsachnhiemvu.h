@@ -65,7 +65,7 @@ public:
 			5,
 			{
 				"Thủy triều đã rút! Thuyền giặc va vào bãi cọc ngầm và trở nên hoảng loạn!",
-				"Ngươi hãy dùng cung tên tiêu diệt toàn bộ quân Nam Hán!"
+				"Ngươi hãy dùng cung tên tiêu diệt toàn bộ quân Nam Hán!",
 				"TOÀN QUÂN... TỔNG PHẢN CÔNG!",
 			}
 		));
