@@ -40,9 +40,9 @@ public:
 			"Dân làng",
 			3,
 			{
-				"Tan quan da bi quet sach, coc go bit sat da gia cong xong xuoi!",
-				"BAY GIO: Hay dung DAY THỪNG keo va DÓNG CHẶT 3 CỌC nay xuong long song Bach Dang!",
-				"Phai xong xuoi truoc khi thuy trieu dang cao che khuat bai coc!"
+				"Tàn quân đã bị đánh bại, cọc gỗ đã làm xong.",
+				"Bây giờ hãy dùng dây thừng cố định và đóng chặt 3 cọc này xuống lòng sông!",
+				"Phải xong trước khi thủy triều dâng cao!"
 			}
 		));
 		ds.push_back(NhiemVu
@@ -54,7 +54,7 @@ public:
 			{
 				"Thủy triều dâng cao đã che khuất bãi cọc ngầm ",
 				"Ngươi hãy mau lên thuyền ra cửa biển lừa giặc tiến sâu vào lòng sông!",
-				"Cẩn thận:  Quân giặc trên sông sẽ bắn tên, dưới sông có đá ngầm. Hãy chèo thuyến khéo léo"
+				"Cẩn thận: Quân giặc trên sông sẽ bắn tên, dưới sông có đá ngầm. Hãy chèo thuyến khéo léo"
 			}
 		));
 		ds.push_back(NhiemVu
