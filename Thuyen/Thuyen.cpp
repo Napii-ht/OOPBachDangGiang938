@@ -249,3 +249,26 @@ void Thuyen::Ve(sf::RenderWindow& window)
     window.draw(thanhMauNen);
     window.draw(thanhMauHienTai);
 }
+
+void Thuyen::XuLyDieuKhien(float deltaTime)
+{
+    sf::Vector2f huong(0.f, 0.f);
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) ||
+        sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
+        huong.y -= 1.f;
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) ||
+        sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
+        huong.y += 1.f;
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) ||
+        sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
+        huong.x -= 1.f;
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) ||
+        sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
+        huong.x += 1.f;
+
+    DiChuyen(huong, deltaTime);
+}
