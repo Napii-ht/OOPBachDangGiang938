@@ -1,0 +1,62 @@
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+#include "GiaoDien/QuanLyTaiNguyen.h"
+
+int main() 
+{
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Kiem tra Tai Nguyen - Bach Dang 938");
+    window.setFramerateLimit(60);
+
+  
+    auto& taiNguyen = QuanLyTaiNguyen::Instance();
+    taiNguyen.LoadFont("FontChinh", "TaiNguyen/PhongChu/font_game.ttf");
+    taiNguyen.LoadSound("Click", "TaiNguyen/AmThanh/click.wav");
+
+  
+    sf::Text tieuDe;
+    tieuDe.setFont(taiNguyen.GetFont("FontChinh"));
+    
+    // sf::String::fromUtf8 giúp giữ nguyên dấu tiếng Việt
+    std::string textTiengViet = u8"Bạch Đằng 938: Ngô Quyền đại phá quân Nam Hán";
+    tieuDe.setString(sf::String::fromUtf8(textTiengViet.begin(), textTiengViet.end()));
+    tieuDe.setCharacterSize(24);
+    tieuDe.setFillColor(sf::Color::Yellow);
+    tieuDe.setPosition(50.f, 100.f);
+
+    sf::Text huongDan;
+    huongDan.setFont(taiNguyen.GetFont("FontChinh"));
+    std::string textHd = u8"Nhấn SPACE để test âm thanh click, ESC để thoát";
+    huongDan.setString(sf::String::fromUtf8(textHd.begin(), textHd.end()));
+    huongDan.setCharacterSize(18);
+    huongDan.setFillColor(sf::Color::White);
+    huongDan.setPosition(50.f, 200.f);
+
+    // 3. Cài đặt âm thanh
+    sf::Sound soundClick;
+    soundClick.setBuffer(taiNguyen.GetSoundBuffer("Click"));
+
+    // Game Loop
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+
+            if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::Space) {
+                    soundClick.play();
+                }
+                if (event.key.code == sf::Keyboard::Escape) {
+                    window.close();
+                }
+            }
+        }
+
+        window.clear(sf::Color(20, 20, 30));
+        window.draw(tieuDe);
+        window.draw(huongDan);
+        window.display();
+    }
+
+    return 0;
+}
