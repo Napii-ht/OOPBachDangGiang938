@@ -1,6 +1,6 @@
 #include"NhanVatPhu.h"
 #include <cmath>
-NhanVatPhu::NhanVatPhu(float x, float y, string& tenNPC, float phamvi) :NhanVat(x, y, 0.0f, 100, 0), ten(tenNPC), Phamvituongtac(phamvi), Dangtuongtac(false)
+NhanVatPhu::NhanVatPhu(float x, float y, const string& tenNPC, float phamvi) :NhanVat(x, y, 0.0f, 100, 0), ten(tenNPC), Phamvituongtac(phamvi), Dangtuongtac(false)
 {
 	hinhDang.setFillColor(Color::Green);
 }
@@ -45,7 +45,7 @@ void NhanVatPhu::HienThiLoiThoai(RenderWindow& cuaso, Font& font)
 
 	string cau = loithoai.Getcauhientai();
 	Text txtNoidung(font, String::fromUtf8(cau.begin(), cau.end()), 17);
-	txtNoidung.setFillColor(Color::Black);
+	txtNoidung.setFillColor(Color::White);
 	txtNoidung.setPosition({ 220.0f, 610.0f });
 
 	cuaso.draw(khung);

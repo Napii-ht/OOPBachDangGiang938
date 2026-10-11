@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+class Thuyen;
+
 class BanDo
 {
 private:
@@ -100,11 +102,7 @@ public:
 
     void CapNhatThuyTrieu(float tiLeRutNuoc);
     bool VaChamCoc(sf::FloatRect hitBoxThuyen) const;
-    void XuLyVaChamThuyenVoiBaiCoc(Thuyen& thuyen) {
-        if (VaChamCoc(thuyen.GetHitBox())) {
-            thuyen.NhanSatThuong(10); // Thuyền đâm vào cọc sẽ bị mất máu
-        }
-    }
+    void XuLyVaChamThuyenVoiBaiCoc(Thuyen& thuyen);
     void DatTrangThaiCoc(bool hienCoc);
     bool GanCocNhatDuoc(
         sf::Vector2f viTriNguoiChoi,

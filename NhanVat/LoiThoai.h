@@ -23,7 +23,7 @@ public:
 	}
 	bool Chuyencau()
 	{
-		if (ptuhientai + danhsachcau.size())
+		if (ptuhientai < danhsachcau.size())
 		{
 			ptuhientai++;
 			return true;

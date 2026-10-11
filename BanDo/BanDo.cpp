@@ -1,4 +1,5 @@
 #include "BanDo.h"
+#include "../Thuyen/Thuyen.h"
 
 #include <exception>
 #include <fstream>
@@ -848,5 +849,13 @@ void BanDo::DanhDauCocDaThuThap(int maVatPham)
             obj.daThuThap = true;
             return;
         }
+    }
+}
+
+void BanDo::XuLyVaChamThuyenVoiBaiCoc(Thuyen& thuyen)
+{
+    if (VaChamCoc(thuyen.GetHitBox()))
+    {
+        thuyen.NhanSatThuong(10);
     }
 }

@@ -10,7 +10,7 @@ protected:
 	float Phamvituongtac;
 	bool Dangtuongtac;
 public:
-	NhanVatPhu(float x, float y, string& tenNPC, float Phamvi = 80.0f);
+	NhanVatPhu(float x, float y, const string& tenNPC, float Phamvi = 80.0f);
 	virtual ~NhanVatPhu() = default;
 	void CapNhat(float dt) override;
 	virtual bool TuongTac(const Vector2f& ViTriNguoiChoi);
