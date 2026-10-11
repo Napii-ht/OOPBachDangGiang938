@@ -5,7 +5,7 @@
 
 // Chương 2: Chuẩn bị trận địa
 // Bản đồ: rừng lim phía tây, kho sắt phía nam, lò rèn phía bắc, xe bò ngoài bờ sông.
-// Cách chơi: đốn gỗ lim, lấy sắt, rèn cọc bịt sắt, chất lên xe, đánh lui thám tử Nam Hán.
+// Cách chơi: đốn gỗ lim, lấy sắt, rèn cọc bịt sắt, chất lên xe, đánh lui tàn quân Nam Hán.
 class ManChuong2 : public ManChoiDiBo {
 private:
     enum MaNhiemVu {

@@ -155,8 +155,8 @@ void ManChuong2::DatNhiemVu() {
         "Mang gỗ và sắt tới lò rèn phía bắc, nhấn E để rèn từng cọc. Mỗi cọc cần một gỗ và một sắt.", LoaiNhiemVu::XAY_DUNG, SO_COC_CAN));
     quanLyNhiemVu.ThemNhiemVu(std::make_unique<NhiemVuKhamPha>(NV_CHAT_COC, "Chất cọc lên xe bò",
         "Đẩy cọc ra xe bò gần bờ sông phía đông, nhấn E để chất lên xe."));
-    quanLyNhiemVu.ThemNhiemVu(std::make_unique<NhiemVuChienDau>(NV_DIET_THAM_TU, "Diệt thám tử Nam Hán",
-        "Thám tử địch lảng vảng quanh xe cọc. Chém chúng bằng Space hoặc J, đừng để chúng báo tin về.", SO_THAM_TU));
+    quanLyNhiemVu.ThemNhiemVu(std::make_unique<NhiemVuChienDau>(NV_DIET_THAM_TU, "Diệt tàn quân Nam Hán",
+        "tàn quân địch lảng vảng quanh xe cọc. Chém chúng bằng Space hoặc J, đừng để chúng báo tin về.", SO_THAM_TU));
     quanLyNhiemVu.ThemNhiemVu(std::make_unique<NhiemVuKhamPha>(NV_BAO_TIN, "Báo tin Tướng Tiên Phong",
         "Nói chuyện với Tướng Tiên Phong bên xe bò."));
     quanLyNhiemVu.BatDau();
@@ -183,7 +183,7 @@ void ManChuong2::DatTuongTac() {
         int ma = MaNhiemVuHienTai();
         if (ma == NV_BAO_TIN) {
             BatDauHoiThoai({
-                {"Tướng Tiên Phong", "Giỏi lắm! Đám thám tử đã bị diệt, tin tức về bãi cọc không lọt ra ngoài.", LoaiNPC::LINH_DAI_VIET},
+                {"Tướng Tiên Phong", "Giỏi lắm! Đám tàn quân đã bị diệt, tin tức về bãi cọc không lọt ra ngoài.", LoaiNPC::LINH_DAI_VIET},
                 {"Tướng Tiên Phong", "Số cọc này sẽ được chở ra cửa sông. Ngô Quyền cần người cắm chúng xuống lòng sông lúc nước triều thấp.", LoaiNPC::LINH_DAI_VIET},
                 {"Tướng Tiên Phong", "Nghỉ lấy sức. Việc khó nhất còn ở phía trước.", LoaiNPC::LINH_DAI_VIET}
             }, [this]() {
@@ -292,9 +292,9 @@ void ManChuong2::DatTuongTac() {
         HienThongBao("Đã chất " + std::to_string(SO_COC_CAN) + " cọc lên xe bò", 4.f);
         quanLyNhiemVu.CapNhatTienDoNhiemVu(1);
 
-        // Vừa chất xong thì thám tử Nam Hán xuất hiện
+        // Vừa chất xong thì tàn quân Nam Hán xuất hiện
         BatDauHoiThoai({
-            {"Tướng Tiên Phong", "Coi chừng! Có thám tử Nam Hán rình quanh đây. Không để chúng chạy về báo tin!", LoaiNPC::LINH_DAI_VIET}
+            {"Tướng Tiên Phong", "Coi chừng! Có tàn quân Nam Hán rình quanh đây. Không để chúng chạy về báo tin!", LoaiNPC::LINH_DAI_VIET}
         }, [this]() { SinhThamTu(); });
     };
     ThemDiemTuongTac(xe);
@@ -360,7 +360,7 @@ void ManChuong2::CapNhatChienDau(float deltaTime) {
         mayAnh.Rung(2.5f, 0.12f);
     }
 
-    // Số thám tử đã hạ chính là tiến độ nhiệm vụ
+    // Số tàn quân đã hạ chính là tiến độ nhiệm vụ
     NhiemVu* nv = quanLyNhiemVu.GetNhiemVuHienTai();
     if (nv && MaNhiemVuHienTai() == NV_DIET_THAM_TU) {
         int daHa = soThamTuBanDau - heThongChienDau.GetSoKeDichConLai();

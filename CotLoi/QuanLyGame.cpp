@@ -40,7 +40,7 @@ void QuanLyGame::DangKyCacChuong() {
         "Đi bộ khám phá doanh trại, trò chuyện với Ngô Quyền và tướng sĩ, nhận kiếm và luyện kiếm trên bãi tập.",
         true, [](NguCanhGame& ngu) { return std::unique_ptr<ManChoi>(new ManChuong1(ngu)); }});
     quanLyManChoi.DangKyChuong({2, "Chuẩn bị trận địa", "Rừng lim và bãi cỏ ven sông",
-        "Đốn gỗ lim trong rừng, lấy sắt ở kho, rèn cọc bịt sắt rồi chất lên xe. Dọc đường có thám tử Nam Hán rình rập.",
+        "Đốn gỗ lim trong rừng, lấy sắt ở kho, rèn cọc bịt sắt rồi chất lên xe. Dọc đường có tàn quân Nam Hán rình rập.",
         true, [](NguCanhGame& ngu) { return std::unique_ptr<ManChoi>(new ManChuong2(ngu)); }});
     quanLyManChoi.DangKyChuong({3, "Dựng bãi cọc", "Cửa sông Bạch Đằng, hai bờ Vũ Yên và Đình Vũ",
         "Chèo thuyền chở cọc ra lòng sông lúc triều thấp, cắm vào từng ô của bãi cọc trước khi nước dâng. Dòng nước cuốn thuyền ra biển.",
