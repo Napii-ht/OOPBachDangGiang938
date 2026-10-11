@@ -1,5 +1,4 @@
-﻿
-#include "NhiemVu.h"
+﻿#include "NhiemVu.h"
 
 NhiemVu::NhiemVu(int id, const std::string& ten, const std::string& desc, LoaiNhiemVu loaiNv, int goal)
     : maNhiemVu(id),
