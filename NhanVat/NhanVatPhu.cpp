@@ -1,5 +1,4 @@
-﻿
-#include "NhanVatPhu.h"
+﻿#include "NhanVatPhu.h"
 #include "../BanDo/DoHoa.h"
 #include <cmath>
 
