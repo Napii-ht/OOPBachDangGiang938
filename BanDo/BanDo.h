@@ -1,119 +1,110 @@
+
 #pragma once
 
-#include <SFML/Graphics.hpp>
-
-#include <memory>
-#include <string>
 #include <vector>
+#include <memory>
+#include <SFML/Graphics.hpp>
+#include "Coc.h"
+#include "Song.h"
+#include "Thuyen.h"
 
-class Thuyen;
+// Cọc gỗ rơi rải rác trên bờ để người chơi nhặt
+struct CocThuThap {
+    sf::Vector2f viTri;
+    bool daNhat;
+};
 
-class BanDo
-{
+class BanDo {
 private:
-    struct TilesetInfo
-    {
-        int firstGid;
-        int tileCount;
-        int columns;
-        int tileWidth;
-        int tileHeight;
+    float chieuRong;
+    float chieuCao;
+    Song song;
+    std::vector<Coc> danhSachCoc;
+    std::vector<CocThuThap> danhSachCocRoi;
 
-        sf::Texture texture;
-    };
+    // ======================= ĐỒ HỌA BẢN ĐỒ =======================
+    // Các lớp tĩnh được dựng 1 lần (VertexArray) -> vẽ chỉ vài draw call mỗi khung hình.
+    float thoiGian = 0.f;
+    sf::VertexArray lopTroi{sf::PrimitiveType::Triangles};  // Bầu trời hoàng hôn, mặt trời, sao
+    sf::VertexArray lopBac{sf::PrimitiveType::Triangles};   // Núi đá vôi, đồi rừng, bờ Bắc, doanh trại
+    sf::VertexArray lopNam{sf::PrimitiveType::Triangles};   // Bờ Nam: bến thuyền, kho cọc, đường mòn...
+    sf::VertexArray lopDong{sf::PrimitiveType::Triangles};  // Bộ đệm cho các vật chuyển động mỗi khung hình
 
-    struct AnimationFrame
-    {
-        int tileId;
-        int duration;
-    };
-
-    struct TileAnimation
-    {
-        std::vector<AnimationFrame> frames;
-    };
-
-    struct TileInfo
-    {
-        sf::Sprite sprite;
-        const TilesetInfo* tileset;
-        int originalLocalId;
-
-        bool animated;
-        TileAnimation animation;
-
-        int currentFrame;
-        float elapsedTime;
-    };
-
-    struct ObjectInfo
-    {
-        std::string layer;
-        std::string name;
-        std::vector<sf::Vector2f> points;
-
+    // Vật thể chuyển động theo gió (cây, tre, lau sậy, cờ, lửa...)
+    enum class LoaiVat { CAY_LA, CAY_DA, TRE, CAU, DUOC, BUI, LAU, CO, LUA };
+    struct VatDong {
+        LoaiVat loai;
         float x;
-        float y;
-        float width;
-        float height;
-
-        int maVatPham = 0;
-        bool daThuThap = false;
+        float y;          // Điểm chạm đất (đáy vật thể)
+        float kichThuoc;  // Hệ số tỉ lệ
+        float pha;
+        int bienThe;
     };
+    std::vector<VatDong> danhSachVat;
 
-    struct ObjectSprite
-    {
-        std::unique_ptr<sf::Texture> texture;
-        std::unique_ptr<sf::Sprite> sprite;
-
-        std::string layer;
-        int objectIndex = -1;
+    struct May    { float x, y, rong, cao, tocDo, doMo; };
+    struct Chim   { float x, y, tocDo, pha, kichThuoc; bool trang; };
+    struct DomDom { sf::Vector2f goc; float pha, tocDo, bienDo; };
+    struct SuongMu{ float x, y, rong, cao, tocDo, doMo; };
+    struct HatSang {
+        sf::Vector2f viTri;
+        sf::Vector2f van;
+        float tuoi, tuoiMax, kichThuoc;
+        sf::Color mau;
+        int kieu;  // 0 = hạt rơi, 1 = vòng sóng lan, 2 = tia lấp lánh
     };
+    std::vector<May> danhSachMay;
+    std::vector<Chim> danhSachChim;
+    std::vector<DomDom> danhSachDomDom;
+    std::vector<SuongMu> danhSachSuong;
+    std::vector<HatSang> danhSachHat;
 
-    std::vector<TilesetInfo> tilesets;
-    std::vector<TileInfo> tiles;
-    std::vector<ObjectInfo> objects;
-    std::vector<ObjectSprite> objectSprites;
-    std::vector<sf::Vector2f> cacDinhSong;
+    void DungBauTroi();
+    void DungNuiVaBoBac();
+    void DungBoNam();
+    void KhoiTaoThucVat();
+    void KhoiTaoHieuUng();
 
-    bool coGioiHanSong = false;
+    void PhatTiaNuoc(sf::Vector2f pos);
+    void PhatManhGo(sf::Vector2f pos);
+    void PhatLongLanhNhat(sf::Vector2f pos);
 
-    int mapWidth;
-    int mapHeight;
-    int tileWidth;
-    int tileHeight;
-
-    float tiLeRutNuocHienTai = 0.f;
-
-    void loadMap(const std::string& path);
-
-    const TilesetInfo* TimTileset(int gid) const;
+    void VeVatDong(sf::RenderWindow& window);
+    void VeCocThuThap(sf::RenderWindow& window);
+    void VeBongCocDuoiNuoc(sf::RenderWindow& window);
+    void VeSuongVaHat(sf::RenderWindow& window);
+    void VeTroiDong(sf::RenderWindow& window);
 
 public:
-    BanDo();
+    BanDo(float rong = 1200.f, float cao = 700.f);
+    ~BanDo() = default;
 
-    void capNhat(float deltaTime);
+    void KhoiTaoBaiCocChuan();
+    void KhoiTaoBaiCocRong(float xMin, float xMax, float yMin, float yMax);
+    void KhoiTaoCocThuThap(int soLuong = 3);
+
+    void CapNhat(float deltaTime);
     void Ve(sf::RenderWindow& window);
 
-    int layChieuRong() const;
-    int layChieuCao() const;
-    
-    bool namTrongSong(sf::Vector2f viTri) const;
+    // Tùy chọn: gọi SAU khi đã vẽ thuyền để có hiệu ứng tiền cảnh
+    // (viền tối vignette, tia nắng, cỏ lau tiền cảnh đung đưa)
+    void VeTienCanh(sf::RenderWindow& window);
 
-    void CapNhatThuyTrieu(float tiLeRutNuoc);
-    bool VaChamCoc(sf::FloatRect hitBoxThuyen) const;
-    void XuLyVaChamThuyenVoiBaiCoc(Thuyen& thuyen);
-    void DatTrangThaiCoc(bool hienCoc);
-    bool GanCocNhatDuoc(
-        sf::Vector2f viTriNguoiChoi,
-        float khoangCach = 60.f
-    ) const;
+    // Xử lý nhặt cọc gỗ trên bờ
+    int KiemTraNhatCoc(sf::Vector2f viTriPlayer, float banKinh = 55.f);
+    int GetSoCocChuaNhat() const;
 
-    bool NhatCocGanNhat(
-        sf::Vector2f viTriNguoiChoi,
-        int& maVatPham,
-        std::string& tenVatPham
-    );
+    // Cắm cọc xuống dòng sông
+    void ThemCocMoi(sf::Vector2f pos);
 
-    void DanhDauCocDaThuThap(int maVatPham);
+    // Quản lý va chạm và tương tác sông nước
+    bool XuLyVaChamThuyenVoiBaiCoc(ThuyenKeDich& thuyen);
+
+    Song& GetSong() { return song; }
+    const Song& GetSong() const { return song; }
+    const std::vector<Coc>& GetDanhSachCoc() const { return danhSachCoc; }
+    float GetChieuRong() const { return chieuRong; }
+    float GetChieuCao() const { return chieuCao; }
 };
+
+

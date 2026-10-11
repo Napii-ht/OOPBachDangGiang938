@@ -1,84 +1,77 @@
+﻿
 #pragma once
-#include <functional>
-#include <string>
-#include <vector>
-#include "NhanVat.h"
-#include "../DoiTuong/TuDo.h"
-#include "../DoiTuong/VatPham.h"
 
-// NguoiChoi ke thua NhanVat: co them the luc, chay, tan cong, tuong tac, va cham, nhat do.
+#include "NhanVat.h"
+#include "../VatPham/TuDo.h"
+#include <SFML/Graphics.hpp>
+#include <vector>
+
 class NguoiChoi : public NhanVat {
 private:
-    // ----- Thuoc tinh rieng cua nguoi choi -----
-    float theLuc;          // the luc hien tai
+    float theLuc;
     float theLucToiDa;
-    float tocDoChay;       // toc do khi giu Shift
-    float phamViTanCong;   // ban kinh danh (pixel)
+    float tocDoChay;
+    bool dangChayNhanh;
 
-    // ----- Trang thai dieu khien (cap nhat moi khung hinh) -----
-    sf::Vector2f huongDi;      // huong bam phim hien tai, vd (1,0) = sang phai
-    sf::Vector2f huongNhin;    // huong nhin cuoi cung
-    float thoiGianHoiChieu;    // cooldown danh (giay con lai)
-    float thoiGianTanCong;     // thoi gian "dang danh" con lai
+    float phamViTanCong;
+    bool dangTanCong;
+    float thoiGianTanCong;
+    int kieuChem;                  // 0 = chặt từ trên xuống, 1 = hất từ dưới lên (đổi qua lại khi chém liên tiếp)
+    float thoiGianSanSang;         // Còn bao lâu kiếm vẫn cầm trên tay sau nhát chém, hết thì tra vào vỏ
+    int huongNhin; // 1 = Phải, -1 = Trái
 
-    bool dangChay;
-    bool muonChay;             // dang giu Shift?
-    bool kietSuc;              // het the luc -> phai hoi lai moi chay duoc
-    bool dangTanCong;          // true trong 0.2 giay cua don danh
-    bool vuaTanCong;           // true DUNG 1 khung hinh luc vua bam danh
-    bool daTuongTac;           // true DUNG 1 khung hinh khi bam E
+    // Hoạt ảnh chuyển động & nghệ thuật đồ họa
+    float thoiGianHoatAnh;
+    float nhipBuocChan;
+    bool dangDiChuyen;
+    float heSoLat; // Lật mượt từ -1 đến 1
 
-    bool phimETruoc;           // de phat hien "vua bam" (chong giu phim)
-    bool phimCachTruoc;
+    // Giới hạn bản đồ và vật cản (dùng cho các chương đi bộ). Mặc định không giới hạn như bản cũ.
+    bool coGioiHan;
+    sf::FloatRect gioiHan;
+    const std::vector<sf::FloatRect>* danhSachVatCan;
+    bool coKiem;   // Chưa nhận kiếm thì chưa chém được và không đeo kiếm
 
+    // Túi đồ cá nhân của chiến binh
     TuDo tuDo;
 
-    // ----- Giai doan 3: va cham + nhat do -----
-    sf::FloatRect gioiHanBanDo;                          // khong cho di ra ngoai khung nay
-    const std::vector<sf::FloatRect>* danhSachVatCan;    // cac vat can (tuong, nuoc sau...) do BanDo cua Yen cung cap
-    std::function<void(int, const std::string&)> khiNhatVatPham;  // "moc noi" sang TuDo cua Yen
-
-    sf::FloatRect TaoHitBoxTai(const sf::Vector2f& tam) const;   // hop va cham neu dung o vi tri 'tam'
-    bool BiChanTai(const sf::Vector2f& tam) const;               // dung o 'tam' thi co bi chan khong?
+    // Bộ đệm vẽ VertexArray gom đỉnh
+    sf::VertexArray mangDinh{sf::PrimitiveType::Triangles};
 
 public:
-    NguoiChoi(float x, float y);
+    NguoiChoi(sf::Vector2f viTriBanDau);
+    virtual ~NguoiChoi() = default;
 
-    bool NhatCoc(int maVatPham);
-    int GetSoLuongCoc() const;
-    bool DaThuThapDu3Coc() const;
+    // deltaTime dùng để đi đúng tốc độ trên mọi máy. Gọi không tham số thì coi như 1/60 giây (bản cũ).
+    void XuLyPhim(float deltaTime = 1.f / 60.f);
+    void CapNhat(float deltaTime) override;
+    void Ve(sf::RenderWindow& window) override;
 
-    void XuLyPhim();                                              // doc ban phim
-    void DiChuyen(const sf::Vector2f& huong, float dt) override;  // ghi de: co chay + va cham
-    void Chay(float dt);                                          // tinh the luc / che do chay
-    void TanCong();
-    void TuongTac();
-    void Chet();                                                  // = HySinh(), dung ten theo tai lieu nhom
-    void CapNhat(float dt) override;
-    void Ve(sf::RenderWindow& cuaSo) override;
+    bool TanCong();
+    void Chay(bool kichHoat);
+    bool NhanVatPham(const VatPham& vp);
 
-    // ----- Va cham -----
-    bool KiemTraVaCham(const sf::FloatRect& khac) const;          // hop cua nguoi choi co cham 'khac' khong?
-    void DatGioiHanBanDo(const sf::FloatRect& gioiHan)            { gioiHanBanDo = gioiHan; }
-    void DatDanhSachVatCan(const std::vector<sf::FloatRect>* ds)  { danhSachVatCan = ds; }
+    sf::FloatRect GetVungTanCong() const;
+    bool IsDangTanCong() const { return dangTanCong; }
+    sf::FloatRect GetHitBox() const;
 
-    // ----- Nhat do -----
-    bool NhatVatPham(int maVatPham, const std::string& ten);      // goi khi nhat duoc do (vd coc go)
-    void DatKhiNhatVatPham(std::function<void(int, const std::string&)> f) { khiNhatVatPham = std::move(f); }
+    // Vùng chân dùng để xét va chạm với cây, lều, nước
+    sf::FloatRect GetBanChan(sf::Vector2f viTriXet) const;
+    bool KiemTraVaCham(sf::Vector2f viTriXet) const;
+    void DatGioiHan(const sf::FloatRect& vung) { gioiHan = vung; coGioiHan = true; }
+    void DatVatCan(const std::vector<sf::FloatRect>* ds) { danhSachVatCan = ds; }
+    void SetCoKiem(bool co) { coKiem = co; }
+    bool IsCoKiem() const { return coKiem; }
+    void HoiMau(int luong);
+    // Gọi khi người chơi bị khóa điều khiển (đang thoại, đang chiếu phim) để dừng hoạt ảnh chạy bộ
+    void DungLai() { dangDiChuyen = false; dangChayNhanh = false; }
 
-    // ----- Getter (cac lop khac doc trang thai nguoi choi) -----
-    float        GetTheLuc() const        { return theLuc; }
-    float        GetTheLucToiDa() const   { return theLucToiDa; }
-    float        GetPhamViTanCong() const { return phamViTanCong; }
-    sf::Vector2f GetHuongNhin() const     { return huongNhin; }
-    // Vung danh = hinh vuong quanh nguoi choi, canh = 2 * phamViTanCong.
-    // Dua thang cho HeThongChienDau::XuLyPlayerTanCong(vungTanCong, satThuong, playerDangChem)
-    sf::FloatRect GetVungTanCong() const {
-        return sf::FloatRect(viTri - sf::Vector2f(phamViTanCong, phamViTanCong),
-                             sf::Vector2f(phamViTanCong * 2.f, phamViTanCong * 2.f));
-    }
-    bool IsDangChay() const      { return dangChay; }
-    bool IsDangTanCong() const   { return dangTanCong; }
-    bool IsVuaTanCong() const    { return vuaTanCong; }    // HeThongChienDau dung de tru mau dung 1 lan / don danh
-    bool IsDaBamTuongTac() const { return daTuongTac; }    // NPC / coc / thuyen se hoi cai nay
+    float GetTheLuc() const { return theLuc; }
+    float GetTheLucToiDa() const { return theLucToiDa; }
+    TuDo& GetTuDo() { return tuDo; }
+    const TuDo& GetTuDo() const { return tuDo; }
+
+    int GetHuongNhin() const { return huongNhin; }
 };
+
+

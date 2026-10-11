@@ -1,10 +1,8 @@
+﻿
 #include "HeThongChienDau.h"
+#include "../CotLoi/TienIch.h"
 #include "../BanDo/BanDo.h"
 #include <algorithm>
-
-static sf::String VanBan(const std::string& utf8) {
-    return sf::String::fromUtf8(utf8.begin(), utf8.end());
-}
 
 HeThongChienDau::HeThongChienDau()
     : soKeDichConLai(0),
@@ -55,9 +53,7 @@ void HeThongChienDau::CapNhatHaiChien(float deltaTime, sf::Vector2f viTriThuyenP
             }
 
             // Kiểm tra đâm va vào cọc ngầm Bạch Đằng
-            if (banDo.VaChamCoc(thuyen->GetHitBox())) {
-                thuyen->SetMacCoc(true);
-            }
+            banDo.XuLyVaChamThuyenVoiBaiCoc(*thuyen);
 
             thuyen->CapNhat(deltaTime);
         }
@@ -99,6 +95,8 @@ void HeThongChienDau::CapNhat(float deltaTime, NhanVat& player) {
             }
 
             demLinhConSong++;
+        } else {
+            dich->CapNhat(deltaTime);   // Chạy tiếp hoạt ảnh ngã xuống
         }
     }
 
@@ -107,7 +105,7 @@ void HeThongChienDau::CapNhat(float deltaTime, NhanVat& player) {
 
 void HeThongChienDau::Ve(sf::RenderWindow& window) {
     for (auto& dich : danhSachKeDich) {
-        if (!dich->IsDaHySinh()) {
+        if (!dich->IsDaBienMat()) {
             dich->Ve(window);
         }
     }
@@ -188,3 +186,5 @@ void HeThongChienDau::VeBossBar(sf::RenderWindow& window, const sf::Font& font) 
     tenBoss.setPosition({x, y - 18.f});
     window.draw(tenBoss);
 }
+
+

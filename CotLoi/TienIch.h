@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <SFML/Graphics.hpp>
 #include <string>
@@ -35,3 +35,6 @@ void VeChuTrai(sf::RenderWindow& window, const sf::Font& font, const std::string
 
 // Tự xuống dòng cho đoạn văn UTF-8 sao cho mỗi dòng không rộng quá rongToiDa (pixel)
 std::string NgatDong(const sf::Font& font, const std::string& utf8, unsigned int coChu, float rongToiDa);
+
+// Kích hoạt mở video kết thúc nếu file tồn tại
+bool PhatVideoNgoai(const std::string& tenVideo = "ChienThangBachDang.mp4");

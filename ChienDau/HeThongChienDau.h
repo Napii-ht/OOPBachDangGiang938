@@ -1,7 +1,8 @@
+﻿
 #pragma once
 
 #include "../NhanVat/KeDich.h"
-#include "ThuyenKeDich.h"
+#include "../BanDo/Thuyen.h"
 #include "HeThongAI.h"
 #include <vector>
 #include <unordered_set>
@@ -55,3 +56,5 @@ public:
     // Vẽ thanh máu Boss Lưu Hoằng Thao phong cách Terraria ở giữa đỉnh màn hình
     void VeBossBar(sf::RenderWindow& window, const sf::Font& font);
 };
+
+

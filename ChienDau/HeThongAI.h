@@ -1,7 +1,8 @@
+﻿
 #pragma once
 
 #include "../NhanVat/KeDich.h"
-#include "ThuyenKeDich.h"
+#include "../BanDo/Thuyen.h"
 #include <SFML/System/Vector2.hpp>
 #include <vector>
 #include <memory>
@@ -24,3 +25,5 @@ public:
     static float TinhKhoangCach(sf::Vector2f p1, sf::Vector2f p2);
     static sf::Vector2f TinhHuong(sf::Vector2f nguon, sf::Vector2f dich);
 };
+
+

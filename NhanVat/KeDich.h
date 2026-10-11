@@ -1,3 +1,4 @@
+﻿
 #pragma once
 
 #include "NhanVat.h"
@@ -5,7 +6,7 @@
 #include <string>
 
 enum class TrangThaiKeDich {
-    DUNG_YEN,    // Chưa thấy ai thì đứng yên
+    DUNG_YEN,    // Chưa thấy ai thì đứng cảnh giới
     DUOI_THEO,   // Phát hiện mục tiêu thì áp sát
     TAN_CONG,    // Đủ cự ly thì chém
     BI_THUONG,   // Bị trúng đòn khựng lại
@@ -14,7 +15,7 @@ enum class TrangThaiKeDich {
 
 enum class LoaiKeDich {
     LINH_THUONG,        // Lính bộ binh Nam Hán
-    TUONG_HOANG_THAO    // Tướng giặc Lưu Hoằng Thao (Chỉ huy)
+    TUONG_HOANG_THAO    // Tướng giặc Lưu Hoằng Thao (Chỉ huy tối cao)
 };
 
 class KeDich : public NhanVat {
@@ -32,6 +33,13 @@ private:
     float thoiGianHoatAnh;
     float nhipBuocChan;
     float thoiGianBiThuong; // Nháy trắng khi trúng đòn
+
+    // Đòn đánh có lấy đà: giơ đao lên rồi mới chém, người chơi kịp né
+    bool dangLayDa;
+    float thoiGianLayDa;
+    float thoiGianSauDon;   // Thời gian kể từ nhát chém gần nhất, dùng cho hoạt ảnh vung và thu đao
+    float thoiGianChet;     // Hoạt ảnh ngã xuống sau khi hết máu
+    int bienThe;            // 0 đến 3: khác nhau về khiên và màu lông mũ để đám lính không giống hệt nhau
 
     sf::VertexArray mangDinh{sf::PrimitiveType::Triangles};
 
@@ -58,4 +66,9 @@ public:
     bool IsBoss() const { return loai == LoaiKeDich::TUONG_HOANG_THAO; }
 
     sf::FloatRect GetHitBox() const;
+
+    // Đã ngã xong và biến mất hẳn thì không cần vẽ nữa
+    bool IsDaBienMat() const { return daHySinh && thoiGianChet >= 1.0f; }
 };
+
+

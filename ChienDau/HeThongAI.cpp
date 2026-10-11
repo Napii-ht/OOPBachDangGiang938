@@ -1,3 +1,4 @@
+
 #include "HeThongAI.h"
 #include <cmath>
 
@@ -52,3 +53,5 @@ void HeThongAI::XuLyGianCachLinh(std::vector<std::unique_ptr<KeDich>>& danhSachD
 void HeThongAI::CapNhatAIThuyen(ThuyenKeDich& thuyen, sf::Vector2f viTriThuyenPlayer, float deltaTime) {
     thuyen.DuoiTheo(viTriThuyenPlayer, deltaTime);
 }
+
+

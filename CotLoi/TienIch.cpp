@@ -1,4 +1,4 @@
-﻿#include "TienIch.h"
+#include "TienIch.h"
 #include <filesystem>
 
 sf::String VanBan(const std::string& utf8) {
@@ -122,4 +122,64 @@ std::string NgatDong(const sf::Font& font, const std::string& utf8, unsigned int
     }
     ketQua += dongHienTai;
     return ketQua;
+}
+
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#include <shellapi.h>
+#endif
+#include <cstdlib>
+
+bool PhatVideoNgoai(const std::string& tenVideo) {
+    const char* cacTienTo[] = { "", "../", "../../", "../../../" };
+    std::string duongDanTimThay = "";
+    std::error_code ec;
+
+    // 1. Tìm theo tên chỉ định
+    for (const char* t : cacTienTo) {
+        std::string thu1 = std::string(t) + "TaiNguyen/Video/" + tenVideo;
+        if (std::filesystem::exists(thu1, ec)) { duongDanTimThay = thu1; break; }
+        std::string thu2 = std::string(t) + "TaiNguyen/" + tenVideo;
+        if (std::filesystem::exists(thu2, ec)) { duongDanTimThay = thu2; break; }
+    }
+
+    // 2. Nếu chưa thấy, tìm bất kỳ file .mp4 nào trong thư mục Video
+    if (duongDanTimThay.empty()) {
+        for (const char* t : cacTienTo) {
+            std::string thuMucVideo = std::string(t) + "TaiNguyen/Video";
+            if (std::filesystem::exists(thuMucVideo, ec)) {
+                for (const auto& entry : std::filesystem::directory_iterator(thuMucVideo, ec)) {
+                    if (entry.is_regular_file() && entry.path().extension() == ".mp4") {
+                        duongDanTimThay = entry.path().string();
+                        break;
+                    }
+                }
+            }
+            if (!duongDanTimThay.empty()) break;
+        }
+    }
+
+    if (duongDanTimThay.empty()) return false;
+
+    // Chuẩn hóa sang đường dẫn tuyệt đối với dấu gạch chéo ngược Windows (\)
+    std::filesystem::path pAbs = std::filesystem::absolute(duongDanTimThay);
+    std::string duongDanChuan = pAbs.lexically_normal().string();
+    for (char& c : duongDanChuan) {
+        if (c == '/') c = '\\';
+    }
+
+#ifdef _WIN32
+    HINSTANCE res = ShellExecuteA(NULL, "open", duongDanChuan.c_str(), NULL, NULL, SW_SHOWNORMAL);
+    if (reinterpret_cast<INT_PTR>(res) > 32) return true;
+
+    // Dự phòng gọi lệnh start của Windows shell
+    std::string lenhStart = "start \"\" \"" + duongDanChuan + "\"";
+    return std::system(lenhStart.c_str()) == 0;
+#else
+    std::string lenhLinux = "xdg-open \"" + duongDanChuan + "\" &";
+    return std::system(lenhLinux.c_str()) == 0;
+#endif
 }
